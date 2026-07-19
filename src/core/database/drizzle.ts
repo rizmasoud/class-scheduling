@@ -29,7 +29,7 @@ export const initializeDrizzle = (tauriDb: Database) => {
       return { rows: result };
     } catch (error) {
       logger.error('Database query failed', error);
-      throw new DatabaseError(error instanceof Error ? error.message : 'Unknown database error');
+      throw new DatabaseError('A database operation failed.');
     }
   });
 };
