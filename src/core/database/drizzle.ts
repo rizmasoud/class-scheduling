@@ -1,5 +1,7 @@
 import Database from '@tauri-apps/plugin-sql';
 import { drizzle } from 'drizzle-orm/sqlite-proxy';
+import { logger } from '@/core/logger';
+import { DatabaseError } from '@/core/errors';
 
 /**
  * Bridges Drizzle queries with the Tauri SQL plugin.
@@ -26,8 +28,8 @@ export const initializeDrizzle = (tauriDb: Database) => {
 
       return { rows: result };
     } catch (error) {
-      console.error('Database query failed:', error);
-      throw error;
+      logger.error('Database query failed', error);
+      throw new DatabaseError(error instanceof Error ? error.message : 'Unknown database error');
     }
   });
 };

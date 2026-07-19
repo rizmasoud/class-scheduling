@@ -1,5 +1,8 @@
 import Database from '@tauri-apps/plugin-sql';
 import { initializeDrizzle } from './drizzle';
+import { appConfig } from '@/core/config';
+import { logger } from '@/core/logger';
+import { DatabaseError } from '@/core/errors';
 
 let _db: ReturnType<typeof initializeDrizzle> | null = null;
 let _tauriDb: Database | null = null;
@@ -13,10 +16,15 @@ let _tauriDb: Database | null = null;
 export const getDatabase = async () => {
   if (_db) return _db;
 
-  // The database name usually defaults to being stored in the app data directory
-  _tauriDb = await Database.load('sqlite:edutech.db');
-  
-  _db = initializeDrizzle(_tauriDb);
+  try {
+    // The database name is dynamically loaded from our centralized app config
+    _tauriDb = await Database.load(`sqlite:${appConfig.database.name}`);
+    
+    _db = initializeDrizzle(_tauriDb);
 
-  return _db;
+    return _db;
+  } catch (error) {
+    logger.error('Failed to initialize local database connection', error);
+    throw new DatabaseError('Failed to initialize local database connection');
+  }
 };
