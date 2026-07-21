@@ -1,5 +1,7 @@
 import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core';
+import { relations } from 'drizzle-orm';
 import { timestamps } from '@/core/database/schema/base.schema';
+import { teacherSkills } from '@/core/database/schema/teacher-skills.schema';
 
 export const books = sqliteTable(
   'books',
@@ -13,6 +15,10 @@ export const books = sqliteTable(
     ...timestamps,
   }
 );
+
+export const booksRelations = relations(books, ({ many }) => ({
+  teacherSkills: many(teacherSkills),
+}));
 
 export type Book = typeof books.$inferSelect;
 export type InsertBook = typeof books.$inferInsert;

@@ -10,3 +10,5 @@ export * from './class-students.schema';
 export * from './teacher-skills.schema';
 export * from './teacher-attendance.schema';
 export * from './exam-results.schema';
+export * from './scheduling-proposals.schema';
+export * from './proposal-classes.schema';

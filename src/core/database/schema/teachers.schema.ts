@@ -1,5 +1,7 @@
-import { sqliteTable, text, real } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { relations } from 'drizzle-orm';
 import { timestamps } from '@/core/database/schema/base.schema';
+import { teacherSkills } from '@/core/database/schema/teacher-skills.schema';
 
 export const teachers = sqliteTable(
   'teachers',
@@ -8,11 +10,14 @@ export const teachers = sqliteTable(
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
     fullName: text('full_name').notNull(),
-    maxTeachingLevel: real('max_teaching_level').notNull(),
     notes: text('notes'),
     ...timestamps,
   }
 );
+
+export const teachersRelations = relations(teachers, ({ many }) => ({
+  teacherSkills: many(teacherSkills),
+}));
 
 export type Teacher = typeof teachers.$inferSelect;
 export type InsertTeacher = typeof teachers.$inferInsert;

@@ -50,3 +50,14 @@ export enum SupervisorDecision {
   FreeClass = 'FreeClass',
   MoveToLowerLevel = 'MoveToLowerLevel',
 }
+
+export enum SchedulingProposalStatus {
+  Draft = 'Draft',
+  Closed = 'Closed',
+}
+
+export enum ProposalClassStatus {
+  Pending = 'Pending',
+  Approved = 'Approved',
+  Rejected = 'Rejected',
+}
