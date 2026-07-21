@@ -44,3 +44,9 @@ export enum EnrollmentStatus {
   Completed = 'Completed',
   Dropped = 'Dropped',
 }
+
+export enum SupervisorDecision {
+  RepeatBook = 'RepeatBook',
+  FreeClass = 'FreeClass',
+  MoveToLowerLevel = 'MoveToLowerLevel',
+}
