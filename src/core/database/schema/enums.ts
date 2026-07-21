@@ -38,3 +38,9 @@ export enum WeekDay {
   Wednesday = 'Wednesday',
   Thursday = 'Thursday',
 }
+
+export enum EnrollmentStatus {
+  Active = 'Active',
+  Completed = 'Completed',
+  Dropped = 'Dropped',
+}

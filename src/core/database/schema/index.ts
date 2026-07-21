@@ -6,3 +6,5 @@ export * from './students.schema';
 export * from './student-preferences.schema';
 export * from './classes.schema';
 export * from './class-schedules.schema';
+export * from './class-students.schema';
+export * from './teacher-skills.schema';
