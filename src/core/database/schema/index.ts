@@ -8,3 +8,4 @@ export * from './classes.schema';
 export * from './class-schedules.schema';
 export * from './class-students.schema';
 export * from './teacher-skills.schema';
+export * from './teacher-attendance.schema';
