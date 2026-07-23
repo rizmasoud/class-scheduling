@@ -4,6 +4,7 @@ import { timestamps } from '@/core/database/schema/base.schema';
 import { ClassStatus } from '@/core/database/schema/enums';
 import { books } from '@/core/database/schema/books.schema';
 import { teachers } from '@/core/database/schema/teachers.schema';
+import { classSchedules } from '@/core/database/schema/class-schedules.schema';
 
 export const classes = sqliteTable('classes', {
   id: text('id')
@@ -23,7 +24,7 @@ export const classes = sqliteTable('classes', {
   ...timestamps,
 });
 
-export const classesRelations = relations(classes, ({ one }) => ({
+export const classesRelations = relations(classes, ({ one, many }) => ({
   book: one(books, {
     fields: [classes.bookId],
     references: [books.id],
@@ -32,6 +33,7 @@ export const classesRelations = relations(classes, ({ one }) => ({
     fields: [classes.teacherId],
     references: [teachers.id],
   }),
+  classSchedules: many(classSchedules),
 }));
 
 export type Class = typeof classes.$inferSelect;
