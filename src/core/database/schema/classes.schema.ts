@@ -1,6 +1,9 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { relations } from 'drizzle-orm';
 import { timestamps } from '@/core/database/schema/base.schema';
 import { ClassStatus } from '@/core/database/schema/enums';
+import { books } from '@/core/database/schema/books.schema';
+import { teachers } from '@/core/database/schema/teachers.schema';
 
 export const classes = sqliteTable('classes', {
   id: text('id')
@@ -19,6 +22,17 @@ export const classes = sqliteTable('classes', {
   notes: text('notes'),
   ...timestamps,
 });
+
+export const classesRelations = relations(classes, ({ one }) => ({
+  book: one(books, {
+    fields: [classes.bookId],
+    references: [books.id],
+  }),
+  teacher: one(teachers, {
+    fields: [classes.teacherId],
+    references: [teachers.id],
+  }),
+}));
 
 export type Class = typeof classes.$inferSelect;
 export type InsertClass = typeof classes.$inferInsert;

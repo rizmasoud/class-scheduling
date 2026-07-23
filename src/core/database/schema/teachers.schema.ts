@@ -2,6 +2,7 @@ import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
 import { timestamps } from '@/core/database/schema/base.schema';
 import { teacherSkills } from '@/core/database/schema/teacher-skills.schema';
+import { classes } from '@/core/database/schema/classes.schema';
 
 export const teachers = sqliteTable(
   'teachers',
@@ -17,6 +18,7 @@ export const teachers = sqliteTable(
 
 export const teachersRelations = relations(teachers, ({ many }) => ({
   teacherSkills: many(teacherSkills),
+  classes: many(classes),
 }));
 
 export type Teacher = typeof teachers.$inferSelect;
