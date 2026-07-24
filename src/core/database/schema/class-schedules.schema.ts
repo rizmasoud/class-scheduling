@@ -3,6 +3,7 @@ import { relations } from 'drizzle-orm';
 import { timestamps } from '@/core/database/schema/base.schema';
 import { WeekDay } from '@/core/database/schema/enums';
 import { classes } from '@/core/database/schema/classes.schema';
+import { teacherAttendance } from '@/core/database/schema/teacher-attendance.schema';
 
 export const classSchedules = sqliteTable('class_schedules', {
   id: text('id')
@@ -17,11 +18,12 @@ export const classSchedules = sqliteTable('class_schedules', {
   ...timestamps,
 });
 
-export const classSchedulesRelations = relations(classSchedules, ({ one }) => ({
+export const classSchedulesRelations = relations(classSchedules, ({ one, many }) => ({
   class: one(classes, {
     fields: [classSchedules.classId],
     references: [classes.id],
   }),
+  teacherAttendances: many(teacherAttendance),
 }));
 
 export type ClassSchedule = typeof classSchedules.$inferSelect;

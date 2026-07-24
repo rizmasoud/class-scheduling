@@ -1,10 +1,11 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
-import { timestamps } from '@/core/database/schema/base.schema';
+import { timestamps, softDeletes } from '@/core/database/schema/base.schema';
 import { ClassStatus } from '@/core/database/schema/enums';
 import { books } from '@/core/database/schema/books.schema';
 import { teachers } from '@/core/database/schema/teachers.schema';
 import { classSchedules } from '@/core/database/schema/class-schedules.schema';
+import { classStudents } from '@/core/database/schema/class-students.schema';
 
 export const classes = sqliteTable('classes', {
   id: text('id')
@@ -22,6 +23,7 @@ export const classes = sqliteTable('classes', {
   maxCapacity: integer('max_capacity').notNull().default(15),
   notes: text('notes'),
   ...timestamps,
+  ...softDeletes,
 });
 
 export const classesRelations = relations(classes, ({ one, many }) => ({
@@ -34,6 +36,7 @@ export const classesRelations = relations(classes, ({ one, many }) => ({
     references: [teachers.id],
   }),
   classSchedules: many(classSchedules),
+  classStudents: many(classStudents),
 }));
 
 export type Class = typeof classes.$inferSelect;
