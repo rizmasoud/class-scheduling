@@ -27,12 +27,20 @@ import {
 } from '@/core/database/schema/enums';
 
 export const ProposalMapper = {
-  toDomain(raw: PersistenceSchedulingProposal): DomainSchedulingProposal {
+  toDomain(raw: PersistenceSchedulingProposal, classes?: (PersistenceProposalClass & { schedules?: PersistenceProposalClassSchedule[] })[]): DomainSchedulingProposal {
+    const clss = classes ? classes.map(c => {
+      const pClass = ProposalMapper.toDomainProposalClass(c);
+      return {
+        ...pClass,
+        schedules: c.schedules ? c.schedules.map(ProposalMapper.toDomainProposalClassSchedule) : undefined,
+      };
+    }) : undefined;
     return {
       id: raw.id as ProposalId,
       generatedAt: raw.generatedAt,
       status: raw.status as DomainSchedulingProposalStatus,
       notes: raw.notes,
+      classes: clss,
     };
   },
   

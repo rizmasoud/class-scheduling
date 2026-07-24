@@ -18,7 +18,9 @@ import { ClassStudent as PersistenceClassStudent, InsertClassStudent } from '@/c
 import { ClassStatus as PersistenceClassStatus, WeekDay as PersistenceWeekDay, EnrollmentStatus as PersistenceEnrollmentStatus } from '@/core/database/schema/enums';
 
 export const ClassMapper = {
-  toDomain(raw: PersistenceClass): DomainClass {
+  toDomain(raw: PersistenceClass, schedules?: PersistenceClassSchedule[], enrollments?: PersistenceClassStudent[]): DomainClass {
+    const scheds = schedules ? schedules.map(ClassMapper.toDomainSchedule) : undefined;
+    const enrs = enrollments ? enrollments.map(ClassMapper.toDomainEnrollment) : undefined;
     return {
       id: raw.id as ClassId,
       name: raw.name,
@@ -29,6 +31,8 @@ export const ClassMapper = {
       targetCapacity: raw.targetCapacity,
       maxCapacity: raw.maxCapacity,
       notes: raw.notes,
+      schedules: scheds,
+      enrollments: enrs,
     };
   },
   

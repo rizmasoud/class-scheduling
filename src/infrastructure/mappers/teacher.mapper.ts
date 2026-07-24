@@ -14,11 +14,15 @@ import { TeacherSkill as PersistenceTeacherSkill, InsertTeacherSkill } from '@/c
 import { AvailableDayPattern as PersistenceAvailableDayPattern } from '@/core/database/schema/enums';
 
 export const TeacherMapper = {
-  toDomain(raw: PersistenceTeacher): DomainTeacher {
+  toDomain(raw: PersistenceTeacher, preference?: PersistenceTeacherPreference | null, skills?: PersistenceTeacherSkill[]): DomainTeacher {
+    const pref = preference ? TeacherMapper.toDomainPreference(preference) : undefined;
+    const sks = skills ? skills.map(TeacherMapper.toDomainSkill) : undefined;
     return {
       id: raw.id as TeacherId,
       fullName: raw.fullName,
       notes: raw.notes,
+      preference: pref,
+      skills: sks,
     };
   },
   

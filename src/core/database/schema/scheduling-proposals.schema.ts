@@ -1,6 +1,6 @@
 import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
-import { timestamps } from '@/core/database/schema/base.schema';
+import { timestamps, softDeletes } from '@/core/database/schema/base.schema';
 import { SchedulingProposalStatus } from '@/core/database/schema/enums';
 import { proposalClasses } from '@/core/database/schema/proposal-classes.schema';
 
@@ -15,6 +15,7 @@ export const schedulingProposals = sqliteTable('scheduling_proposals', {
     .default(SchedulingProposalStatus.Draft),
   notes: text('notes'),
   ...timestamps,
+  ...softDeletes,
 });
 
 export const schedulingProposalsRelations = relations(schedulingProposals, ({ many }) => ({

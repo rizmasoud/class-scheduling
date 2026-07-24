@@ -11,12 +11,14 @@ import { StudentPreference as PersistenceStudentPreference, InsertStudentPrefere
 import { AvailableDayPattern as PersistenceAvailableDayPattern } from '@/core/database/schema/enums';
 
 export const StudentMapper = {
-  toDomain(raw: PersistenceStudent): DomainStudent {
+  toDomain(raw: PersistenceStudent, preference?: PersistenceStudentPreference | null): DomainStudent {
+    const pref = preference ? StudentMapper.toDomainPreference(preference) : undefined;
     return {
       id: raw.id as StudentId,
       fullName: raw.fullName,
       currentBookId: raw.currentBookId as BookId,
       notes: raw.notes,
+      preference: pref,
     };
   },
   

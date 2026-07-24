@@ -33,6 +33,8 @@ export interface Teacher {
   readonly id: TeacherId;
   readonly fullName: string;
   readonly notes: string | null;
+  readonly preference?: TeacherPreference | null;
+  readonly skills?: TeacherSkill[];
 }
 
 export interface TeacherPreference {
@@ -55,6 +57,7 @@ export interface Student {
   readonly fullName: string;
   readonly currentBookId: BookId;
   readonly notes: string | null;
+  readonly preference?: StudentPreference | null;
 }
 
 export interface StudentPreference {
@@ -75,6 +78,8 @@ export interface Class {
   readonly targetCapacity: number;
   readonly maxCapacity: number;
   readonly notes: string | null;
+  readonly schedules?: ClassSchedule[];
+  readonly enrollments?: Enrollment[];
 }
 
 export interface ClassSchedule {
@@ -109,6 +114,7 @@ export interface SchedulingProposal {
   readonly generatedAt: string;
   readonly status: SchedulingProposalStatus;
   readonly notes: string | null;
+  readonly classes?: ProposalClass[];
 }
 
 export interface ProposalClass {
@@ -123,6 +129,7 @@ export interface ProposalClass {
   readonly editedBySupervisor: boolean;
   readonly status: ProposalClassStatus;
   readonly notes: string | null;
+  readonly schedules?: ProposalClassSchedule[];
 }
 
 export interface ProposalClassSchedule {
