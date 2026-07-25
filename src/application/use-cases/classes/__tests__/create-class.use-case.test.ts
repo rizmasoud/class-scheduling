@@ -10,6 +10,7 @@ describe('CreateClassUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
+            saveMany: vi.fn(),
       archive: vi.fn(),
     };
 
@@ -47,6 +48,7 @@ describe('CreateClassUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
+            saveMany: vi.fn(),
       archive: vi.fn(),
     };
 

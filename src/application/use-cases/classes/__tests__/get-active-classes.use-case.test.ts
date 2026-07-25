@@ -13,6 +13,7 @@ describe('GetActiveClassesUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn().mockResolvedValue(classes),
       findMany: vi.fn(),
+            saveMany: vi.fn(),
       archive: vi.fn(),
     };
 

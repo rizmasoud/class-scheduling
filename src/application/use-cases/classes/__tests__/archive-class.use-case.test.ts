@@ -6,6 +6,7 @@ describe('ArchiveClassUseCase', () => {
   it('should archive a class', async () => {
     const mockRepo: IClassRepository = {
       save: vi.fn(),
+      saveMany: vi.fn(),
       findById: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn(),

@@ -1,4 +1,4 @@
-import { SchedulingProposal, ProposalId } from '@/domain/models';
+import { SchedulingProposal, ProposalId, Class } from '@/domain/models';
 
 export interface IProposalRepository {
   findById(id: ProposalId): Promise<SchedulingProposal | null>;
@@ -6,5 +6,6 @@ export interface IProposalRepository {
   findAllActive(): Promise<readonly SchedulingProposal[]>;
   findMany(ids: readonly ProposalId[]): Promise<readonly SchedulingProposal[]>;
   save(proposal: SchedulingProposal): Promise<SchedulingProposal>;
+  saveWithClasses(proposal: SchedulingProposal, newClasses: readonly Class[]): Promise<void>;
   archive(id: ProposalId): Promise<void>;
 }

@@ -6,6 +6,7 @@ describe('ArchiveProposalUseCase', () => {
   it('should archive a proposal', async () => {
     const mockRepo: IProposalRepository = {
       save: vi.fn(),
+      saveWithClasses: vi.fn(),
       findById: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn(),

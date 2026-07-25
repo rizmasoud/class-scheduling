@@ -6,6 +6,8 @@ import { proposalClassSchedules } from '@/core/database/schema/proposal-class-sc
 import { SchedulingProposal, ProposalId } from '@/domain/models';
 import { IProposalRepository } from '@/domain/repositories/i-proposal.repository';
 import { ProposalMapper } from '@/infrastructure/mappers/proposal.mapper';
+import { Class } from '@/domain/models';
+import { ClassRepository } from './class.repository';
 import { SoftDeleteRepository } from './base.repository';
 
 export class ProposalRepository 
@@ -211,6 +213,21 @@ export class ProposalRepository
         schedules: pSchedules.filter(s => s.proposalClassId === c.id)
       }));
       return ProposalMapper.toDomain(result, classesWithSchedules);
+    });
+  }
+
+  
+  async saveWithClasses(proposal: SchedulingProposal, newClasses: readonly Class[]): Promise<void> {
+    await this.db.transaction(async (tx: any) => {
+      // 1. Save proposal using a transactional repository instance
+      const proposalRepo = new ProposalRepository(tx);
+      await proposalRepo.save(proposal);
+
+      // 2. Save classes using a transactional repository instance
+      const classRepo = new ClassRepository(tx);
+      if (newClasses.length > 0) {
+        await classRepo.saveMany(newClasses);
+      }
     });
   }
 

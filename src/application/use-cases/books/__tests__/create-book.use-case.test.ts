@@ -10,7 +10,7 @@ describe('CreateBookUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      archive: vi.fn(),
+            archive: vi.fn(),
     };
 
     const useCase = new CreateBookUseCase(mockRepo);

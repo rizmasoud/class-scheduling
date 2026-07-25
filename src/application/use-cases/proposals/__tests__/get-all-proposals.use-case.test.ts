@@ -22,11 +22,12 @@ describe('GetAllProposalsUseCase', () => {
     ];
     const mockRepo: IProposalRepository = {
       save: vi.fn(),
+      saveWithClasses: vi.fn(),
       findById: vi.fn(),
       findAll: vi.fn().mockResolvedValue(proposals),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      archive: vi.fn(),
+            archive: vi.fn(),
     };
 
     const useCase = new GetAllProposalsUseCase(mockRepo);

@@ -18,6 +18,7 @@ describe('UpdateProposalUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
+            saveWithClasses: vi.fn(),
       archive: vi.fn(),
     };
 
@@ -49,11 +50,12 @@ describe('UpdateProposalUseCase', () => {
   it('should throw error if proposal not found', async () => {
     const mockRepo: IProposalRepository = {
       save: vi.fn(),
+      saveWithClasses: vi.fn(),
       findById: vi.fn().mockResolvedValue(null),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      archive: vi.fn(),
+            archive: vi.fn(),
     };
 
     const useCase = new UpdateProposalUseCase(mockRepo);
@@ -93,6 +95,7 @@ describe('UpdateProposalUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
+            saveWithClasses: vi.fn(),
       archive: vi.fn(),
     };
 

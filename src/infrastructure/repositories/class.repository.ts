@@ -1,5 +1,5 @@
 import { eq, and, notInArray } from 'drizzle-orm';
-import { DbExecutor } from '@/core/database/types';
+import { DbExecutor, AppTransaction } from '@/core/database/types';
 import { classes, Class as PersistenceClass, InsertClass } from '@/core/database/schema/classes.schema';
 import { classSchedules } from '@/core/database/schema/class-schedules.schema';
 import { classStudents } from '@/core/database/schema/class-students.schema';
@@ -76,9 +76,24 @@ export class ClassRepository
   }
 
   async save(classData: Class): Promise<Class> {
+    return await this.db.transaction(async (tx: any) => {
+      return this._saveTx(tx, classData);
+    });
+  }
+
+  async saveMany(classes: readonly Class[]): Promise<readonly Class[]> {
+    return await this.db.transaction(async (tx: any) => {
+      const results: Class[] = [];
+      for (const classData of classes) {
+        results.push(await this._saveTx(tx, classData));
+      }
+      return results;
+    });
+  }
+
+  private async _saveTx(tx: any, classData: Class): Promise<Class> {
     const persistenceModel = ClassMapper.toPersistence(classData);
 
-    return await this.db.transaction(async (tx) => {
       // 1. Save root entity (Class)
       const existing = await tx
         .select()
@@ -172,7 +187,6 @@ export class ClassRepository
       const savedScheds = await tx.select().from(classSchedules).where(eq(classSchedules.classId, classData.id as string));
       const savedEnrs = await tx.select().from(classStudents).where(eq(classStudents.classId, classData.id as string));
       return ClassMapper.toDomain(result, savedScheds, savedEnrs);
-    });
   }
 
   async archive(id: ClassId): Promise<void> {

@@ -13,7 +13,7 @@ describe('GetActiveBooksUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn().mockResolvedValue(books),
       findMany: vi.fn(),
-      archive: vi.fn(),
+            archive: vi.fn(),
     };
 
     const useCase = new GetActiveBooksUseCase(mockRepo);

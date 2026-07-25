@@ -10,7 +10,7 @@ describe('CreateStudentUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      archive: vi.fn(),
+            archive: vi.fn(),
     };
 
     const useCase = new CreateStudentUseCase(mockRepo);
@@ -37,7 +37,7 @@ describe('CreateStudentUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      archive: vi.fn(),
+            archive: vi.fn(),
     };
 
     const useCase = new CreateStudentUseCase(mockRepo);

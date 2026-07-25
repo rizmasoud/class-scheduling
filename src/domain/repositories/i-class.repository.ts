@@ -6,5 +6,6 @@ export interface IClassRepository {
   findAllActive(): Promise<readonly Class[]>;
   findMany(ids: readonly ClassId[]): Promise<readonly Class[]>;
   save(classData: Class): Promise<Class>;
+  saveMany(classes: readonly Class[]): Promise<readonly Class[]>;
   archive(id: ClassId): Promise<void>;
 }

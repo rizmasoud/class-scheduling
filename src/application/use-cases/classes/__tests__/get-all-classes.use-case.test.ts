@@ -14,6 +14,7 @@ describe('GetAllClassesUseCase', () => {
       findAll: vi.fn().mockResolvedValue(classes),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
+            saveMany: vi.fn(),
       archive: vi.fn(),
     };
 

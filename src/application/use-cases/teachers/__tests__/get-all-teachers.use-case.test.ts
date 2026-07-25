@@ -14,7 +14,7 @@ describe('GetAllTeachersUseCase', () => {
       findAll: vi.fn().mockResolvedValue(teachers),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      archive: vi.fn(),
+            archive: vi.fn(),
     };
 
     const useCase = new GetAllTeachersUseCase(mockRepo);

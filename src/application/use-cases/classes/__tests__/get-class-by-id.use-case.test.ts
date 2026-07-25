@@ -11,6 +11,7 @@ describe('GetClassByIdUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
+            saveMany: vi.fn(),
       archive: vi.fn(),
     };
 

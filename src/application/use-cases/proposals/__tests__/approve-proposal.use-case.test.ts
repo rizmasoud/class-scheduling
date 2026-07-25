@@ -1,0 +1,63 @@
+import { describe, it, expect, vi } from 'vitest';
+import { ApproveProposalUseCase } from '../approve-proposal.use-case';
+import { IProposalRepository } from '@/domain/repositories/i-proposal.repository';
+import { SchedulingProposal, ProposalId } from '@/domain/models';
+
+describe('ApproveProposalUseCase', () => {
+  it('should approve a proposal successfully', async () => {
+    const proposal: SchedulingProposal = {
+      id: 'p-1' as ProposalId,
+      generatedAt: '2023-01-01',
+      status: 'Draft',
+      notes: null,
+      classes: [
+        {
+          id: 'pc-1' as any,
+          proposalId: 'p-1' as ProposalId,
+          bookId: 'b-1' as any,
+          teacherId: null,
+          generatedName: 'Gen Name',
+          customName: null,
+          score: 10,
+          reasons: [],
+          editedBySupervisor: false,
+          status: 'Pending',
+          notes: null,
+          schedules: []
+        }
+      ]
+    };
+
+    const mockProposalRepo: IProposalRepository = {
+      findById: vi.fn().mockResolvedValue(proposal),
+      findAll: vi.fn(),
+      findAllActive: vi.fn(),
+      findMany: vi.fn(),
+      save: vi.fn().mockImplementation((p) => Promise.resolve(p)),
+      saveWithClasses: vi.fn(),
+      archive: vi.fn(),
+    };
+
+    const useCase = new ApproveProposalUseCase(mockProposalRepo);
+    const result = await useCase.execute('p-1' as ProposalId);
+
+    expect(mockProposalRepo.findById).toHaveBeenCalledWith('p-1');
+    expect(mockProposalRepo.save).toHaveBeenCalled();
+    expect(result.classes![0].status).toBe('Approved');
+  });
+
+  it('should throw an error if proposal is not found', async () => {
+    const mockProposalRepo: IProposalRepository = {
+      findById: vi.fn().mockResolvedValue(null),
+      findAll: vi.fn(),
+      findAllActive: vi.fn(),
+      findMany: vi.fn(),
+      save: vi.fn(),
+      saveWithClasses: vi.fn(),
+      archive: vi.fn(),
+    };
+
+    const useCase = new ApproveProposalUseCase(mockProposalRepo);
+    await expect(useCase.execute('non-existent' as ProposalId)).rejects.toThrow();
+  });
+});

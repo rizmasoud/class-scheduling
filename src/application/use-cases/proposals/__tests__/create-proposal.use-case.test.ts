@@ -10,6 +10,7 @@ describe('CreateProposalUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
+            saveWithClasses: vi.fn(),
       archive: vi.fn(),
     };
 
@@ -38,6 +39,7 @@ describe('CreateProposalUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
+            saveWithClasses: vi.fn(),
       archive: vi.fn(),
     };
 
