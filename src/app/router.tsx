@@ -1,16 +1,38 @@
-import { createRouter, createRoute, createRootRoute, Outlet } from '@tanstack/react-router';
+import { createRouter, createRoute, createRootRoute } from '@tanstack/react-router';
+import { Layout } from '@/shared/components/Layout';
+import { BooksPage } from '@/features/books/components/BooksPage';
+import { StudentsPage } from '@/features/students/components/StudentsPage';
+import { TeachersPage } from '@/features/teachers/components/TeachersPage';
 
 const rootRoute = createRootRoute({
-  component: () => <Outlet />,
+  component: Layout,
 });
 
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
-  component: () => <div>EduTech</div>,
+  component: () => <div>Welcome to EduTech Dashboard!</div>,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute]);
+const booksRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/books',
+  component: BooksPage,
+});
+
+const studentsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/students',
+  component: StudentsPage,
+});
+
+const teachersRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/teachers',
+  component: TeachersPage,
+});
+
+const routeTree = rootRoute.addChildren([indexRoute, booksRoute, studentsRoute, teachersRoute]);
 
 export const router = createRouter({ routeTree });
 
