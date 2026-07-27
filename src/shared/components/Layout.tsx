@@ -1,7 +1,7 @@
 import { AppShell, Burger, Group, NavLink, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Outlet, Link, useLocation } from '@tanstack/react-router';
-import { BookOpen, Calendar, Users, Briefcase } from 'lucide-react';
+import { BookOpen, Calendar, Users, Briefcase, GraduationCap, ClipboardCheck, FileText, UserPlus } from 'lucide-react';
 
 export function Layout() {
   const [opened, { toggle }] = useDisclosure();
@@ -37,6 +37,20 @@ export function Layout() {
         />
         <NavLink
           component={Link}
+          to="/teachers"
+          label="Teachers"
+          leftSection={<Briefcase size={16} />}
+          active={location.pathname.startsWith('/teachers')}
+        />
+        <NavLink
+          component={Link}
+          to="/classes"
+          label="Classes"
+          leftSection={<GraduationCap size={16} />}
+          active={location.pathname.startsWith('/classes')}
+        />
+        <NavLink
+          component={Link}
           to="/students"
           label="Students"
           leftSection={<Users size={16} />}
@@ -44,10 +58,24 @@ export function Layout() {
         />
         <NavLink
           component={Link}
-          to="/teachers"
-          label="Teachers"
-          leftSection={<Briefcase size={16} />}
-          active={location.pathname.startsWith('/teachers')}
+          to="/enrollments"
+          label="Enrollments"
+          leftSection={<UserPlus size={16} />}
+          active={location.pathname.startsWith('/enrollments')}
+        />
+        <NavLink
+          component={Link}
+          to="/exams"
+          label="Exams"
+          leftSection={<ClipboardCheck size={16} />}
+          active={location.pathname.startsWith('/exams')}
+        />
+        <NavLink
+          component={Link}
+          to="/proposals"
+          label="Proposals"
+          leftSection={<FileText size={16} />}
+          active={location.pathname.startsWith('/proposals')}
         />
       </AppShell.Navbar>
 

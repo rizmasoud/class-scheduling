@@ -3,6 +3,10 @@ import { Layout } from '@/shared/components/Layout';
 import { BooksPage } from '@/features/books/components/BooksPage';
 import { StudentsPage } from '@/features/students/components/StudentsPage';
 import { TeachersPage } from '@/features/teachers/components/TeachersPage';
+import { ClassesPage } from '@/features/classes/components/ClassesPage';
+import { ExamsPage } from '@/features/exams/components/ExamsPage';
+import { ProposalsPage } from '@/features/proposals/components/ProposalsPage';
+import { EnrollmentsPage } from '@/features/enrollments/components/EnrollmentsPage';
 
 const rootRoute = createRootRoute({
   component: Layout,
@@ -32,7 +36,40 @@ const teachersRoute = createRoute({
   component: TeachersPage,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, booksRoute, studentsRoute, teachersRoute]);
+const classesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/classes',
+  component: ClassesPage,
+});
+
+const examsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/exams',
+  component: ExamsPage,
+});
+
+const proposalsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/proposals',
+  component: ProposalsPage,
+});
+
+const enrollmentsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/enrollments',
+  component: EnrollmentsPage,
+});
+
+const routeTree = rootRoute.addChildren([
+  indexRoute, 
+  booksRoute, 
+  studentsRoute, 
+  teachersRoute, 
+  classesRoute, 
+  examsRoute, 
+  proposalsRoute,
+  enrollmentsRoute
+]);
 
 export const router = createRouter({ routeTree });
 
