@@ -17,18 +17,46 @@ export class TimeSlotGenerator {
         const startTimeStr = this.formatTime(currentStartTime);
         const endTimeStr = this.formatTime(currentEndTime);
         
-        timeSlots.push({
+        const slot: TimeSlot = {
           id: `${weekDay}-${startTimeStr}-${endTimeStr}`,
           weekDay,
           startTime: startTimeStr,
           endTime: endTimeStr,
-        });
+        };
+
+        if (!this.isSlotOccupied(slot, context)) {
+          timeSlots.push(slot);
+        }
 
         currentStartTime = currentEndTime;
       }
     }
 
     return timeSlots;
+  }
+
+  private isSlotOccupied(slot: TimeSlot, context: SchedulingContext): boolean {
+    const s1 = this.parseTime(slot.startTime);
+    const e1 = this.parseTime(slot.endTime);
+
+    for (const activeClass of context.activeClasses) {
+      if (!activeClass.schedules) continue;
+      
+      for (const schedule of activeClass.schedules) {
+        if (schedule.weekDay !== slot.weekDay) {
+          continue;
+        }
+
+        const s2 = this.parseTime(schedule.startTime);
+        const e2 = this.parseTime(schedule.endTime);
+
+        if (Math.max(s1, s2) < Math.min(e1, e2)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   private parseTime(timeStr: string): number {
@@ -42,3 +70,4 @@ export class TimeSlotGenerator {
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
   }
 }
+

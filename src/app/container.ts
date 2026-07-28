@@ -20,6 +20,20 @@ import { UpdateProposalUseCase } from '@/application/use-cases/proposals/update-
 import { GetAllProposalsUseCase } from '@/application/use-cases/proposals/get-all-proposals.use-case';
 import { ApproveProposalUseCase } from '@/application/use-cases/proposals/approve-proposal.use-case';
 import { GenerateProposalUseCase } from '@/application/use-cases/proposals/generate-proposal.use-case';
+import { TimeSlotGenerator } from '@/domain/services/scheduling-engine/pipeline/time-slot-generator';
+import { CandidateGenerator } from '@/domain/services/scheduling-engine/pipeline/candidate-generator';
+import { RuleEngine } from '@/domain/services/scheduling-engine/rules/rule-engine';
+import { Optimizer } from '@/domain/services/scheduling-engine/pipeline/optimizer';
+import { ProposalAssembler } from '@/domain/services/scheduling-engine/pipeline/proposal-assembler';
+import { SchedulingEngine } from '@/domain/services/scheduling-engine/scheduling-engine';
+import { CapacityLimitRule } from '@/domain/services/scheduling-engine/rules/hard-rules/capacity-limit.rule';
+import { StudentDoubleBookingRule } from '@/domain/services/scheduling-engine/rules/hard-rules/student-double-booking.rule';
+import { TeacherBookCompatibilityRule } from '@/domain/services/scheduling-engine/rules/hard-rules/teacher-book-compatibility.rule';
+import { TeacherTimeConflictRule } from '@/domain/services/scheduling-engine/rules/hard-rules/teacher-time-conflict.rule';
+import { BalancedDistributionRule } from '@/domain/services/scheduling-engine/rules/soft-rules/balanced-distribution.rule';
+import { OptimalCapacityRule } from '@/domain/services/scheduling-engine/rules/soft-rules/optimal-capacity.rule';
+import { TeacherExperienceRule } from '@/domain/services/scheduling-engine/rules/soft-rules/teacher-experience.rule';
+import { TeacherPreferenceRule } from '@/domain/services/scheduling-engine/rules/soft-rules/teacher-preference.rule';
 import { GetActiveProposalsUseCase } from '@/application/use-cases/proposals/get-active-proposals.use-case';
 import { GetActiveBooksUseCase } from '@/application/use-cases/books/get-active-books.use-case';
 import { GetAllBooksUseCase } from '@/application/use-cases/books/get-all-books.use-case';
@@ -121,7 +135,31 @@ export const initContainer = async (): Promise<AppContainer> => {
   const updateProposalUseCase = new UpdateProposalUseCase(proposalRepository);
   const getAllProposalsUseCase = new GetAllProposalsUseCase(proposalRepository);
   const approveProposalUseCase = new ApproveProposalUseCase(proposalRepository);
-  const generateProposalUseCase = new GenerateProposalUseCase(proposalRepository, bookRepository, teacherRepository, studentRepository);
+  // Scheduling Engine Dependencies
+  const timeSlotGenerator = new TimeSlotGenerator();
+  const candidateGenerator = new CandidateGenerator();
+  const ruleEngine = new RuleEngine([
+    new CapacityLimitRule(),
+    new StudentDoubleBookingRule(),
+    new TeacherBookCompatibilityRule(),
+    new TeacherTimeConflictRule(),
+    new BalancedDistributionRule(),
+    new OptimalCapacityRule(),
+    new TeacherExperienceRule(),
+    new TeacherPreferenceRule()
+  ]);
+  const optimizer = new Optimizer();
+  const proposalAssembler = new ProposalAssembler();
+  
+  const schedulingEngine = new SchedulingEngine(
+    timeSlotGenerator,
+    candidateGenerator,
+    ruleEngine,
+    optimizer,
+    proposalAssembler
+  );
+
+  const generateProposalUseCase = new GenerateProposalUseCase(bookRepository, teacherRepository, studentRepository, classRepository, proposalRepository, schedulingEngine);
   const getActiveProposalsUseCase = new GetActiveProposalsUseCase(proposalRepository);
   const getActiveBooksUseCase = new GetActiveBooksUseCase(bookRepository);
   const getAllBooksUseCase = new GetAllBooksUseCase(bookRepository);
