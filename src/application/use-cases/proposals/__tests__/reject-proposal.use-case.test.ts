@@ -23,7 +23,7 @@ describe('RejectProposalUseCase', () => {
           editedBySupervisor: false,
           status: 'Pending',
           notes: null,
-          schedules: []
+          schedules: [], studentIds: []
         }
       ]
     };

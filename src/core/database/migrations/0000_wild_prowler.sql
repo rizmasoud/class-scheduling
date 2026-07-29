@@ -140,6 +140,7 @@ CREATE TABLE `proposal_classes` (
 	`custom_name` text,
 	`score` integer NOT NULL,
 	`reasons` text NOT NULL,
+	`student_ids` text DEFAULT '[]' NOT NULL,
 	`edited_by_supervisor` integer DEFAULT false NOT NULL,
 	`status` text DEFAULT 'Pending' NOT NULL,
 	`notes` text,

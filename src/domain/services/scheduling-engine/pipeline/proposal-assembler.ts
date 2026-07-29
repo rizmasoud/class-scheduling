@@ -54,6 +54,7 @@ export class ProposalAssembler {
         customName: null,
         score,
         reasons: [...reasons],
+        studentIds: [...candidate.studentIds],
         editedBySupervisor: false,
         status: 'Pending',
         notes: null,

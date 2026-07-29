@@ -7,6 +7,7 @@ import { ClassesPage } from '@/features/classes/components/ClassesPage';
 import { ExamsPage } from '@/features/exams/components/ExamsPage';
 import { ProposalsPage } from '@/features/proposals/components/ProposalsPage';
 import { EnrollmentsPage } from '@/features/enrollments/components/EnrollmentsPage';
+import { ProposalEditPage } from '@/features/proposal-editing/components/ProposalEditPage';
 
 const rootRoute = createRootRoute({
   component: Layout,
@@ -54,6 +55,13 @@ const proposalsRoute = createRoute({
   component: ProposalsPage,
 });
 
+
+const proposalEditRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/proposals/$proposalId/edit',
+  component: ProposalEditPage,
+});
+
 const enrollmentsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/enrollments',
@@ -68,6 +76,7 @@ const routeTree = rootRoute.addChildren([
   classesRoute, 
   examsRoute, 
   proposalsRoute,
+  proposalEditRoute,
   enrollmentsRoute
 ]);
 

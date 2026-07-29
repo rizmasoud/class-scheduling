@@ -130,6 +130,7 @@ export interface ProposalClass {
   readonly status: ProposalClassStatus;
   readonly notes: string | null;
   readonly schedules?: ProposalClassSchedule[];
+  readonly studentIds: readonly StudentId[];
 }
 
 export interface ProposalClassSchedule {

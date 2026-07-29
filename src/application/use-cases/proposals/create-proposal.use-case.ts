@@ -63,6 +63,7 @@ export class CreateProposalUseCase {
               editedBySupervisor: cls.editedBySupervisor ?? false,
               status: cls.status ?? 'Pending',
               notes: cls.notes ?? null,
+              studentIds: [],
               schedules: cls.schedules
                 ? cls.schedules.map((sch) => ({
                     id: crypto.randomUUID() as ProposalClassScheduleId,

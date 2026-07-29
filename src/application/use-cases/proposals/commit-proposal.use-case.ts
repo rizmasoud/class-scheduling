@@ -1,4 +1,4 @@
-import { ProposalId, ClassId, ClassScheduleId } from '@/domain/models';
+import { ProposalId, ClassId, ClassScheduleId, EnrollmentId } from '@/domain/models';
 import { IProposalRepository } from '@/domain/repositories/i-proposal.repository';
 import { commitProposal } from '@/domain/services/proposal.logic';
 
@@ -18,7 +18,8 @@ export class CommitProposalUseCase {
     const { closedProposal, newClasses } = commitProposal(
       proposal,
       () => crypto.randomUUID() as ClassId,
-      () => crypto.randomUUID() as ClassScheduleId
+      () => crypto.randomUUID() as ClassScheduleId,
+      () => crypto.randomUUID() as EnrollmentId
     );
 
     await this.proposalRepository.saveWithClasses(closedProposal, newClasses);

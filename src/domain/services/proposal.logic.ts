@@ -6,7 +6,8 @@ import {
   Student, 
   Class,
   ClassId,
-  ClassScheduleId
+  ClassScheduleId,
+  EnrollmentId
 } from '../models';
 
 export function generateProposalDraft(
@@ -48,10 +49,13 @@ export function rejectProposal(proposal: SchedulingProposal): SchedulingProposal
 export function commitProposal(
   proposal: SchedulingProposal,
   classIdGenerator: () => ClassId,
-  scheduleIdGenerator: () => ClassScheduleId
+  scheduleIdGenerator: () => ClassScheduleId,
+  enrollmentIdGenerator: () => EnrollmentId
 ): { closedProposal: SchedulingProposal, newClasses: Class[] } {
   const approvedClasses = (proposal.classes || []).filter(c => c.status === 'Approved');
   
+  const now = new Date().toISOString();
+
   const newClasses: Class[] = approvedClasses.map(pc => {
     const classId = classIdGenerator();
     return {
@@ -71,7 +75,14 @@ export function commitProposal(
         startTime: sch.startTime,
         endTime: sch.endTime
       })),
-      enrollments: []
+      enrollments: (pc.studentIds || []).map(studentId => ({
+        id: enrollmentIdGenerator(),
+        classId: classId,
+        studentId: studentId,
+        enrollmentStatus: 'Active',
+        joinedAt: now,
+        leftAt: null
+      }))
     };
   });
 

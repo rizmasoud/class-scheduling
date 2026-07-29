@@ -20,6 +20,10 @@ export const proposalClasses = sqliteTable('proposal_classes', {
   reasons: text('reasons', { mode: 'json' })
     .$type<string[]>()
     .notNull(),
+  studentIds: text('student_ids', { mode: 'json' })
+    .$type<string[]>()
+    .notNull()
+    .default([]),
   editedBySupervisor: integer('edited_by_supervisor', { mode: 'boolean' }).notNull().default(false),
   status: text('status')
     .$type<ProposalClassStatus>()

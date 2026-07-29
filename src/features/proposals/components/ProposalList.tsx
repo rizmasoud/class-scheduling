@@ -1,5 +1,6 @@
 import { Table, ActionIcon, Group, Text, Loader, Center, Badge } from '@mantine/core';
-import { Check, Trash2 } from 'lucide-react';
+import { Check, Trash2, Edit } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
 import { SchedulingProposal } from '@/domain/models';
 
 interface Props {
@@ -35,6 +36,11 @@ export function ProposalList({ proposals, isLoading, onCommit, onArchive }: Prop
           {proposal.status !== 'Closed' && (
             <ActionIcon variant="subtle" color="green" onClick={() => onCommit(proposal)} title="Commit Proposal">
               <Check size={16} />
+            </ActionIcon>
+          )}
+          {proposal.status === 'Draft' && (
+            <ActionIcon component={Link} to={`/proposals/${proposal.id}/edit`} variant="subtle" color="blue" title="Edit Proposal">
+              <Edit size={16} />
             </ActionIcon>
           )}
           <ActionIcon variant="subtle" color="red" onClick={() => onArchive(proposal)} title="Archive Proposal">

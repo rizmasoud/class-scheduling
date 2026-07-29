@@ -84,7 +84,7 @@ describe('UpdateProposalUseCase', () => {
           editedBySupervisor: false,
           status: 'Pending' as const,
           notes: null,
-          schedules: [],
+          schedules: [], studentIds: [],
         },
       ],
     };

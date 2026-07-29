@@ -32,7 +32,8 @@ describe('ProposalRepository', () => {
         notes: null,
         schedules: [
           { id: 'psched-1', proposalClassId: 'pclass-1', weekDay: 'Tuesday', startTime: '09:00', endTime: '10:00' }
-        ]
+        ],
+        studentIds: []
       }
     ],
   };

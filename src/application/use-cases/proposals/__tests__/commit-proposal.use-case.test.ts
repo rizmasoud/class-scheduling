@@ -31,7 +31,8 @@ describe('CommitProposalUseCase', () => {
               startTime: '10:00',
               endTime: '12:00'
             }
-          ]
+          ],
+          studentIds: []
         },
         {
           id: 'pc-2' as any,
@@ -45,7 +46,7 @@ describe('CommitProposalUseCase', () => {
           editedBySupervisor: false,
           status: 'Pending',
           notes: null,
-          schedules: []
+          schedules: [], studentIds: []
         }
       ]
     };

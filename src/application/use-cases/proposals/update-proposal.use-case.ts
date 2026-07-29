@@ -67,6 +67,7 @@ export class UpdateProposalUseCase {
           editedBySupervisor: cls.editedBySupervisor ?? false,
           status: cls.status ?? 'Pending',
           notes: cls.notes !== undefined ? cls.notes : null,
+          studentIds: [],
           schedules: cls.schedules
             ? cls.schedules.map((sch) => ({
                 id: sch.id ?? (crypto.randomUUID() as ProposalClassScheduleId),

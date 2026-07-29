@@ -60,6 +60,14 @@ import { GetAllExamsUseCase } from '@/application/use-cases/exams/get-all-exams.
 import { UpdateExamUseCase } from '@/application/use-cases/exams/update-exam.use-case';
 import { CreateExamUseCase } from '@/application/use-cases/exams/create-exam.use-case';
 import { GetExamByIdUseCase } from '@/application/use-cases/exams/get-exam-by-id.use-case';
+import { MoveStudentBetweenProposalClassesUseCase } from '@/application/use-cases/proposals/manual-editing/move-student.use-case';
+import { AddStudentToProposalClassUseCase } from '@/application/use-cases/proposals/manual-editing/add-student.use-case';
+import { RemoveStudentFromProposalClassUseCase } from '@/application/use-cases/proposals/manual-editing/remove-student.use-case';
+import { SwapStudentsBetweenProposalClassesUseCase } from '@/application/use-cases/proposals/manual-editing/swap-students.use-case';
+import { AssignTeacherToProposalClassUseCase } from '@/application/use-cases/proposals/manual-editing/assign-teacher.use-case';
+import { ChangeProposalClassScheduleUseCase } from '@/application/use-cases/proposals/manual-editing/change-schedule.use-case';
+import { ManualProposalEditor } from '@/domain/services/manual-editing/manual-proposal-editor';
+
 
 export interface AppContainer {
   getActiveTeachersUseCase: GetActiveTeachersUseCase;
@@ -103,6 +111,12 @@ export interface AppContainer {
   updateExamUseCase: UpdateExamUseCase;
   createExamUseCase: CreateExamUseCase;
   getExamByIdUseCase: GetExamByIdUseCase;
+  moveStudentBetweenProposalClassesUseCase: MoveStudentBetweenProposalClassesUseCase;
+  addStudentToProposalClassUseCase: AddStudentToProposalClassUseCase;
+  removeStudentFromProposalClassUseCase: RemoveStudentFromProposalClassUseCase;
+  swapStudentsBetweenProposalClassesUseCase: SwapStudentsBetweenProposalClassesUseCase;
+  assignTeacherToProposalClassUseCase: AssignTeacherToProposalClassUseCase;
+  changeProposalClassScheduleUseCase: ChangeProposalClassScheduleUseCase;
 }
 
 let containerInstance: AppContainer | null = null;
@@ -186,6 +200,14 @@ export const initContainer = async (): Promise<AppContainer> => {
   const updateExamUseCase = new UpdateExamUseCase(examRepository);
   const createExamUseCase = new CreateExamUseCase(examRepository);
   const getExamByIdUseCase = new GetExamByIdUseCase(examRepository);
+  const manualProposalEditor = new ManualProposalEditor(ruleEngine);
+  const moveStudentBetweenProposalClassesUseCase = new MoveStudentBetweenProposalClassesUseCase(proposalRepository, bookRepository, teacherRepository, studentRepository, classRepository, manualProposalEditor);
+  const addStudentToProposalClassUseCase = new AddStudentToProposalClassUseCase(proposalRepository, bookRepository, teacherRepository, studentRepository, classRepository, manualProposalEditor);
+  const removeStudentFromProposalClassUseCase = new RemoveStudentFromProposalClassUseCase(proposalRepository, bookRepository, teacherRepository, studentRepository, classRepository, manualProposalEditor);
+  const swapStudentsBetweenProposalClassesUseCase = new SwapStudentsBetweenProposalClassesUseCase(proposalRepository, bookRepository, teacherRepository, studentRepository, classRepository, manualProposalEditor);
+  const assignTeacherToProposalClassUseCase = new AssignTeacherToProposalClassUseCase(proposalRepository, bookRepository, teacherRepository, studentRepository, classRepository, manualProposalEditor);
+  const changeProposalClassScheduleUseCase = new ChangeProposalClassScheduleUseCase(proposalRepository, bookRepository, teacherRepository, studentRepository, classRepository, manualProposalEditor);
+
 
   containerInstance = {
     getActiveTeachersUseCase,
@@ -229,6 +251,12 @@ export const initContainer = async (): Promise<AppContainer> => {
     updateExamUseCase,
     createExamUseCase,
     getExamByIdUseCase,
+    moveStudentBetweenProposalClassesUseCase,
+    addStudentToProposalClassUseCase,
+    removeStudentFromProposalClassUseCase,
+    swapStudentsBetweenProposalClassesUseCase,
+    assignTeacherToProposalClassUseCase,
+    changeProposalClassScheduleUseCase,
   };
 
   return containerInstance;
