@@ -10,6 +10,7 @@ import {
   ProposalClassStatus,
 } from '@/domain/models';
 import { IProposalRepository } from '@/domain/repositories/i-proposal.repository';
+import { validateProposalStatusTransition } from '@/domain/services/proposal.logic';
 
 export interface UpdateProposalClassScheduleDTO {
   id?: ProposalClassScheduleId;
@@ -47,6 +48,14 @@ export class UpdateProposalUseCase {
     const existingProposal = await this.proposalRepository.findById(dto.id);
     if (!existingProposal) {
       throw new Error(`Proposal with id ${dto.id} not found`);
+    }
+
+    if (dto.status && dto.status !== existingProposal.status) {
+      validateProposalStatusTransition(existingProposal.status, dto.status);
+    }
+
+    if (existingProposal.status !== 'Draft' && dto.classes !== undefined) {
+      throw new Error(`Cannot edit proposal in '${existingProposal.status}' status. Only Draft proposals can be edited.`);
     }
 
     let updatedClasses = existingProposal.classes;

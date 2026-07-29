@@ -25,7 +25,10 @@ export function ProposalList({ proposals, isLoading, onCommit, onArchive }: Prop
         {new Date(proposal.generatedAt).toLocaleString()}
       </Table.Td>
       <Table.Td>
-        <Badge variant="light" color={proposal.status === 'Closed' ? 'gray' : 'blue'}>
+        <Badge 
+          variant="light" 
+          color={proposal.status === 'Committed' ? 'green' : proposal.status === 'Archived' ? 'gray' : 'blue'}
+        >
           {proposal.status}
         </Badge>
       </Table.Td>
@@ -33,19 +36,19 @@ export function ProposalList({ proposals, isLoading, onCommit, onArchive }: Prop
       <Table.Td>{proposal.notes || '-'}</Table.Td>
       <Table.Td>
         <Group gap="xs">
-          {proposal.status !== 'Closed' && (
-            <ActionIcon variant="subtle" color="green" onClick={() => onCommit(proposal)} title="Commit Proposal">
-              <Check size={16} />
-            </ActionIcon>
-          )}
           {proposal.status === 'Draft' && (
-            <ActionIcon component={Link} to={`/proposals/${proposal.id}/edit`} variant="subtle" color="blue" title="Edit Proposal">
-              <Edit size={16} />
-            </ActionIcon>
+            <>
+              <ActionIcon variant="subtle" color="green" onClick={() => onCommit(proposal)} title="Commit Proposal">
+                <Check size={16} />
+              </ActionIcon>
+              <ActionIcon component={Link} to={`/proposals/${proposal.id}/edit`} variant="subtle" color="blue" title="Edit Proposal">
+                <Edit size={16} />
+              </ActionIcon>
+              <ActionIcon variant="subtle" color="red" onClick={() => onArchive(proposal)} title="Archive Proposal">
+                <Trash2 size={16} />
+              </ActionIcon>
+            </>
           )}
-          <ActionIcon variant="subtle" color="red" onClick={() => onArchive(proposal)} title="Archive Proposal">
-            <Trash2 size={16} />
-          </ActionIcon>
         </Group>
       </Table.Td>
     </Table.Tr>

@@ -11,17 +11,25 @@ export class CommitProposalUseCase {
       throw new Error(`Proposal with id ${proposalId} not found`);
     }
 
-    if (proposal.status === 'Closed') {
-      throw new Error(`Proposal with id ${proposalId} is already closed`);
+    if (proposal.status === 'Committed') {
+      throw new Error(`Proposal with id ${proposalId} is already committed`);
     }
 
-    const { closedProposal, newClasses } = commitProposal(
+    if (proposal.status === 'Archived') {
+      throw new Error(`Cannot commit archived proposal with id ${proposalId}`);
+    }
+
+    if (proposal.status !== 'Draft') {
+      throw new Error(`Cannot commit proposal with id ${proposalId} in status '${proposal.status}'`);
+    }
+
+    const { committedProposal, newClasses } = commitProposal(
       proposal,
       () => crypto.randomUUID() as ClassId,
       () => crypto.randomUUID() as ClassScheduleId,
       () => crypto.randomUUID() as EnrollmentId
     );
 
-    await this.proposalRepository.saveWithClasses(closedProposal, newClasses);
+    await this.proposalRepository.saveWithClasses(committedProposal, newClasses);
   }
 }

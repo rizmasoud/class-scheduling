@@ -15,7 +15,7 @@ describe('GetAllProposalsUseCase', () => {
       {
         id: 'p-2',
         generatedAt: '2023-10-28T10:00:00Z',
-        status: 'Closed' as const,
+        status: 'Committed' as const,
         notes: null,
         classes: [],
       },
@@ -24,10 +24,11 @@ describe('GetAllProposalsUseCase', () => {
       save: vi.fn(),
       saveWithClasses: vi.fn(),
       findById: vi.fn(),
+      findActiveDraft: vi.fn(),
       findAll: vi.fn().mockResolvedValue(proposals),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            archive: vi.fn(),
+      archive: vi.fn(),
     };
 
     const useCase = new GetAllProposalsUseCase(mockRepo);

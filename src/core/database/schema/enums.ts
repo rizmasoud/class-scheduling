@@ -53,7 +53,8 @@ export enum SupervisorDecision {
 
 export enum SchedulingProposalStatus {
   Draft = 'Draft',
-  Closed = 'Closed',
+  Committed = 'Committed',
+  Archived = 'Archived',
 }
 
 export enum ProposalClassStatus {

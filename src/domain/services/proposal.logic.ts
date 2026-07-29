@@ -7,8 +7,24 @@ import {
   Class,
   ClassId,
   ClassScheduleId,
-  EnrollmentId
+  EnrollmentId,
+  SchedulingProposalStatus
 } from '../models';
+
+export function canTransitionProposalStatus(from: SchedulingProposalStatus, to: SchedulingProposalStatus): boolean {
+  if (from === to) return true;
+  if (from === 'Draft' && (to === 'Committed' || to === 'Archived')) {
+    return true;
+  }
+  return false;
+}
+
+export function validateProposalStatusTransition(from: SchedulingProposalStatus, to: SchedulingProposalStatus): void {
+  if (from === to) return;
+  if (!canTransitionProposalStatus(from, to)) {
+    throw new Error(`Forbidden proposal status transition from '${from}' to '${to}'.`);
+  }
+}
 
 export function generateProposalDraft(
   proposalId: ProposalId,
@@ -17,7 +33,6 @@ export function generateProposalDraft(
   students: readonly Student[],
   date: string
 ): SchedulingProposal {
-  // Pure domain function to assemble the proposal draft
   return {
     id: proposalId,
     generatedAt: date,
@@ -28,6 +43,9 @@ export function generateProposalDraft(
 }
 
 export function approveProposal(proposal: SchedulingProposal): SchedulingProposal {
+  if (proposal.status !== 'Draft') {
+    throw new Error(`Cannot approve proposal in '${proposal.status}' status. Only Draft proposals can be modified.`);
+  }
   return {
     ...proposal,
     classes: (proposal.classes || []).map(c => 
@@ -37,12 +55,21 @@ export function approveProposal(proposal: SchedulingProposal): SchedulingProposa
 }
 
 export function rejectProposal(proposal: SchedulingProposal): SchedulingProposal {
+  validateProposalStatusTransition(proposal.status, 'Archived');
   return {
     ...proposal,
-    status: 'Closed',
+    status: 'Archived',
     classes: (proposal.classes || []).map(c => 
       c.status === 'Pending' ? { ...c, status: 'Rejected' } : c
     )
+  };
+}
+
+export function archiveProposal(proposal: SchedulingProposal): SchedulingProposal {
+  validateProposalStatusTransition(proposal.status, 'Archived');
+  return {
+    ...proposal,
+    status: 'Archived'
   };
 }
 
@@ -51,8 +78,10 @@ export function commitProposal(
   classIdGenerator: () => ClassId,
   scheduleIdGenerator: () => ClassScheduleId,
   enrollmentIdGenerator: () => EnrollmentId
-): { closedProposal: SchedulingProposal, newClasses: Class[] } {
-  const approvedClasses = (proposal.classes || []).filter(c => c.status === 'Approved');
+): { closedProposal: SchedulingProposal, committedProposal: SchedulingProposal, newClasses: Class[] } {
+  validateProposalStatusTransition(proposal.status, 'Committed');
+
+  const approvedClasses = (proposal.classes || []).filter(c => c.status === 'Approved' || c.status === 'Pending');
   
   const now = new Date().toISOString();
 
@@ -86,10 +115,10 @@ export function commitProposal(
     };
   });
 
-  const closedProposal: SchedulingProposal = {
+  const committedProposal: SchedulingProposal = {
     ...proposal,
-    status: 'Closed'
+    status: 'Committed'
   };
 
-  return { closedProposal, newClasses };
+  return { closedProposal: committedProposal, committedProposal, newClasses };
 }

@@ -15,10 +15,11 @@ describe('UpdateProposalUseCase', () => {
     const mockRepo: IProposalRepository = {
       save: vi.fn().mockImplementation((proposal) => Promise.resolve(proposal)),
       findById: vi.fn().mockResolvedValue(existingProposal),
+      findActiveDraft: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            saveWithClasses: vi.fn(),
+      saveWithClasses: vi.fn(),
       archive: vi.fn(),
     };
 
@@ -26,7 +27,7 @@ describe('UpdateProposalUseCase', () => {
 
     const result = await useCase.execute({
       id: 'p-1',
-      status: 'Closed',
+      status: 'Committed',
       notes: 'Finalized',
       classes: [
         {
@@ -38,7 +39,7 @@ describe('UpdateProposalUseCase', () => {
     });
 
     expect(result.id).toBe('p-1');
-    expect(result.status).toBe('Closed');
+    expect(result.status).toBe('Committed');
     expect(result.notes).toBe('Finalized');
     expect(result.classes).toHaveLength(1);
     expect(result.classes?.[0].bookId).toBe('book-2');
@@ -52,10 +53,11 @@ describe('UpdateProposalUseCase', () => {
       save: vi.fn(),
       saveWithClasses: vi.fn(),
       findById: vi.fn().mockResolvedValue(null),
+      findActiveDraft: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            archive: vi.fn(),
+      archive: vi.fn(),
     };
 
     const useCase = new UpdateProposalUseCase(mockRepo);
@@ -92,10 +94,11 @@ describe('UpdateProposalUseCase', () => {
     const mockRepo: IProposalRepository = {
       save: vi.fn().mockImplementation((proposal) => Promise.resolve(proposal)),
       findById: vi.fn().mockResolvedValue(existingProposal),
+      findActiveDraft: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            saveWithClasses: vi.fn(),
+      saveWithClasses: vi.fn(),
       archive: vi.fn(),
     };
 

@@ -12,13 +12,18 @@ export const createTestDb = () => {
   // Override transaction to support async callback which is required by sqlite-proxy but not better-sqlite3
   const dbAny = db as any;
   dbAny.transaction = async (cb: any) => {
+    if (sqlite.inTransaction) {
+      return await cb(dbAny);
+    }
     try {
       sqlite.exec('BEGIN');
       const res = await cb(dbAny);
       sqlite.exec('COMMIT');
       return res;
     } catch (e) {
-      sqlite.exec('ROLLBACK');
+      if (sqlite.inTransaction) {
+        sqlite.exec('ROLLBACK');
+      }
       throw e;
     }
   };

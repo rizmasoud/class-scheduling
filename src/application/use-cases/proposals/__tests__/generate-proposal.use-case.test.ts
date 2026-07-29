@@ -13,6 +13,7 @@ describe('GenerateProposalUseCase', () => {
   it('should generate a proposal draft successfully', async () => {
     const mockProposalRepo: IProposalRepository = {
       findById: vi.fn(),
+      findActiveDraft: vi.fn().mockResolvedValue(null),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),

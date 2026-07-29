@@ -231,7 +231,29 @@ export class ProposalRepository
     });
   }
 
+  async findActiveDraft(): Promise<SchedulingProposal | null> {
+    const raw = await this.db
+      .select()
+      .from(this.table)
+      .where(and(eq(this.table.isArchived, false), eq(this.table.status, 'Draft' as any)))
+      .limit(1)
+      .then(res => res[0]);
+
+    if (!raw) return null;
+    return this.findById(raw.id as ProposalId);
+  }
+
   async archive(id: ProposalId): Promise<void> {
-    await super.executeSoftDelete(id as string);
+    const proposal = await this.findById(id);
+    if (proposal && proposal.status !== 'Draft') {
+      throw new Error(`Only Draft proposals may be archived. Proposal ${id} has status '${proposal.status}'.`);
+    }
+
+    await this.db.transaction(async (tx) => {
+      await tx
+        .update(this.table)
+        .set({ isArchived: true, status: 'Archived' as any, archivedAt: new Date().toISOString() })
+        .where(eq(this.table.id, id as string));
+    });
   }
 }

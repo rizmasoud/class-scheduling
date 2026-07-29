@@ -8,6 +8,12 @@ import { TimeSlot } from '../scheduling-engine/models/time-slot';
 export class ManualProposalEditor {
   constructor(private readonly ruleEngine: RuleEngine) {}
 
+  private ensureDraft(proposal: SchedulingProposal): void {
+    if (proposal.status !== 'Draft') {
+      throw new Error(`Cannot edit proposal in '${proposal.status}' status. Only Draft proposals can be edited.`);
+    }
+  }
+
   private validateClass(
     proposalClass: ProposalClass,
     context: SchedulingContext,
@@ -50,6 +56,7 @@ export class ManualProposalEditor {
     context: SchedulingContext,
     config: SchedulingEngineConfig
   ): SchedulingProposal {
+    this.ensureDraft(proposal);
     const validation = this.validateClass(updatedClass, context, config);
     if (!validation.valid) {
       throw new Error(`Invalid edit: ${validation.reasons.join(', ')}`);
@@ -75,6 +82,7 @@ export class ManualProposalEditor {
     context: SchedulingContext,
     config: SchedulingEngineConfig
   ): SchedulingProposal {
+    this.ensureDraft(proposal);
     const fromClass = proposal.classes?.find(c => c.id === fromClassId);
     const toClass = proposal.classes?.find(c => c.id === toClassId);
     if (!fromClass || !toClass) throw new Error('Class not found');
@@ -150,6 +158,7 @@ export class ManualProposalEditor {
     context: SchedulingContext,
     config: SchedulingEngineConfig
   ): SchedulingProposal {
+    this.ensureDraft(proposal);
     const pClass1 = proposal.classes?.find(c => c.id === classId1);
     const pClass2 = proposal.classes?.find(c => c.id === classId2);
     if (!pClass1 || !pClass2) throw new Error('Class not found');

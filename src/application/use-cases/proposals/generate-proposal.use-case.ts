@@ -23,6 +23,11 @@ export class GenerateProposalUseCase {
   ) {}
 
   async execute(dto: GenerateProposalDTO): Promise<SchedulingProposal> {
+    const existingDraft = await this.proposalRepository.findActiveDraft();
+    if (existingDraft) {
+      throw new Error(`A draft proposal already exists (ID: ${existingDraft.id}). Only one active draft is allowed at a time. Please commit or archive the existing draft before generating a new proposal.`);
+    }
+
     const [books, teachers, students, classes] = await Promise.all([
       this.bookRepository.findAllActive(),
       this.teacherRepository.findAllActive(),

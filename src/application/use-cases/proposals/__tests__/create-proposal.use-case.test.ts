@@ -7,10 +7,11 @@ describe('CreateProposalUseCase', () => {
     const mockRepo: IProposalRepository = {
       save: vi.fn().mockImplementation((proposal) => Promise.resolve(proposal)),
       findById: vi.fn(),
+      findActiveDraft: vi.fn().mockResolvedValue(null),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            saveWithClasses: vi.fn(),
+      saveWithClasses: vi.fn(),
       archive: vi.fn(),
     };
 
@@ -36,10 +37,11 @@ describe('CreateProposalUseCase', () => {
     const mockRepo: IProposalRepository = {
       save: vi.fn().mockImplementation((proposal) => Promise.resolve(proposal)),
       findById: vi.fn(),
+      findActiveDraft: vi.fn().mockResolvedValue(null),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            saveWithClasses: vi.fn(),
+      saveWithClasses: vi.fn(),
       archive: vi.fn(),
     };
 

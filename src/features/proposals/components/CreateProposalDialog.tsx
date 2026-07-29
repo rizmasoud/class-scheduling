@@ -6,7 +6,7 @@ import { useCreateProposal } from '../hooks/use-proposals';
 import { notifications } from '@mantine/notifications';
 
 const schema = z.object({
-  status: z.enum(['Draft', 'Closed'] as const),
+  status: z.enum(['Draft', 'Committed', 'Archived'] as const),
   notes: z.string().nullable().optional(),
 });
 
@@ -58,7 +58,8 @@ export function CreateProposalDialog({ opened, onClose }: Props) {
                 placeholder="Select Status"
                 data={[
                   { value: 'Draft', label: 'Draft' },
-                  { value: 'Closed', label: 'Closed' },
+                  { value: 'Committed', label: 'Committed' },
+                  { value: 'Archived', label: 'Archived' },
                 ]}
                 withAsterisk
                 error={errors.status?.message}

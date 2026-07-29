@@ -41,6 +41,14 @@ export class CreateProposalUseCase {
   constructor(private readonly proposalRepository: IProposalRepository) {}
 
   async execute(dto: CreateProposalDTO): Promise<SchedulingProposal> {
+    const targetStatus = dto.status ?? 'Draft';
+    if (targetStatus === 'Draft') {
+      const existingDraft = await this.proposalRepository.findActiveDraft();
+      if (existingDraft) {
+        throw new Error(`A draft proposal already exists (ID: ${existingDraft.id}). Only one active draft is allowed at a time. Please commit or archive the existing draft before generating a new proposal.`);
+      }
+    }
+
     const proposalId = crypto.randomUUID() as ProposalId;
 
     const proposal: SchedulingProposal = {

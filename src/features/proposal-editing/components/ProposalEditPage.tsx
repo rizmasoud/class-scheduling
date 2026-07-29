@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Container, Title, Text, Stack, SimpleGrid, Loader, Center, Group, Button, ActionIcon } from '@mantine/core';
-import { ArrowLeft } from 'lucide-react';
+import { Container, Title, Text, Stack, SimpleGrid, Loader, Center, Group, Button, Alert, Badge } from '@mantine/core';
+import { ArrowLeft, AlertCircle } from 'lucide-react';
 import { useProposal } from '../hooks/use-proposal-editing';
 import { useActiveBooks } from '@/features/books/hooks/use-books';
 import { useActiveTeachers } from '@/features/teachers/hooks/use-teachers';
@@ -45,6 +45,7 @@ export const ProposalEditPage: React.FC = () => {
   }
 
   const proposalClasses = proposal.classes || [];
+  const isDraft = proposal.status === 'Draft';
 
   return (
     <Container size="xl" py="xl">
@@ -54,21 +55,33 @@ export const ProposalEditPage: React.FC = () => {
             Back to Proposals
           </Button>
         </Group>
+
+        {!isDraft && (
+          <Alert icon={<AlertCircle size={16} />} title="Read-Only Mode" color="orange">
+            This proposal has status <Badge variant="filled" color={proposal.status === 'Committed' ? 'green' : 'gray'}>{proposal.status}</Badge> and cannot be modified.
+          </Alert>
+        )}
+
         <Group justify="space-between" align="flex-start">
           <Stack gap="xs">
-            <Title order={2}>Edit Proposal</Title>
+            <Group align="center">
+              <Title order={2}>Edit Proposal</Title>
+              <Badge color={isDraft ? 'blue' : proposal.status === 'Committed' ? 'green' : 'gray'}>
+                {proposal.status}
+              </Badge>
+            </Group>
             <Text c="dimmed">
               Manually resolve scheduling conflicts by transferring students, assigning teachers, or changing schedules.
             </Text>
           </Stack>
           <Group>
-            <Button variant="light" onClick={() => setTransferOpened(true)}>
+            <Button variant="light" disabled={!isDraft} onClick={() => { setSelectedClass(null); setTransferOpened(true); }}>
               Transfer Students
             </Button>
-            <Button variant="light" onClick={() => setTeacherAssignOpened(true)}>
+            <Button variant="light" disabled={!isDraft} onClick={() => { setSelectedClass(null); setTeacherAssignOpened(true); }}>
               Assign Teacher
             </Button>
-            <Button variant="light" onClick={() => setScheduleEditOpened(true)}>
+            <Button variant="light" disabled={!isDraft} onClick={() => { setSelectedClass(null); setScheduleEditOpened(true); }}>
               Edit Schedule
             </Button>
           </Group>
@@ -78,13 +91,51 @@ export const ProposalEditPage: React.FC = () => {
           {proposalClasses.map((proposalClass) => {
             const book = books?.find((b) => b.id === proposalClass.bookId);
             const teacher = teachers?.find((t) => t.id === proposalClass.teacherId);
+            const studentNames = proposalClass.studentIds?.map(
+              (sId) => students?.find((s) => s.id === sId)?.fullName || sId
+            );
             return (
               <Stack key={proposalClass.id} gap="xs">
                 <ProposalClassCard
                   proposalClass={proposalClass}
                   bookName={book?.name || 'Unknown Book'}
                   teacherName={teacher?.fullName || 'Unknown Teacher'}
+                  studentNames={studentNames}
                 />
+                {isDraft && (
+                  <Group justify="flex-end" gap="xs">
+                    <Button
+                      size="xs"
+                      variant="subtle"
+                      onClick={() => {
+                        setSelectedClass(proposalClass);
+                        setTransferOpened(true);
+                      }}
+                    >
+                      Students
+                    </Button>
+                    <Button
+                      size="xs"
+                      variant="subtle"
+                      onClick={() => {
+                        setSelectedClass(proposalClass);
+                        setTeacherAssignOpened(true);
+                      }}
+                    >
+                      Teacher
+                    </Button>
+                    <Button
+                      size="xs"
+                      variant="subtle"
+                      onClick={() => {
+                        setSelectedClass(proposalClass);
+                        setScheduleEditOpened(true);
+                      }}
+                    >
+                      Schedule
+                    </Button>
+                  </Group>
+                )}
               </Stack>
             );
           })}
@@ -98,17 +149,20 @@ export const ProposalEditPage: React.FC = () => {
             onClose={() => setTransferOpened(false)}
             proposal={proposal}
             students={students}
+            initialClassId={selectedClass?.id}
           />
           <TeacherAssignmentDialog
             opened={teacherAssignOpened}
             onClose={() => setTeacherAssignOpened(false)}
             proposal={proposal}
             teachers={teachers}
+            initialClassId={selectedClass?.id}
           />
           <ScheduleEditorDialog
             opened={scheduleEditOpened}
             onClose={() => setScheduleEditOpened(false)}
             proposal={proposal}
+            initialClassId={selectedClass?.id}
           />
         </>
       )}

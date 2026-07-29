@@ -17,7 +17,7 @@ export const useProposal = (id: ProposalId) => {
 const notifyError = (error: any) => {
   notifications.show({
     title: 'Validation Error',
-    message: error.message || 'The edit violates scheduling constraints.',
+    message: error?.message || 'The edit violates scheduling constraints.',
     color: 'red',
   });
 };
@@ -51,6 +51,7 @@ export const useAddStudent = (proposalId: ProposalId) => {
       getContainer().addStudentToProposalClassUseCase.execute({ proposalId, studentId, classId, config: defaultSchedulingConfig }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: PROPOSAL_DETAIL_QUERY_KEY(proposalId) });
+      queryClient.invalidateQueries({ queryKey: PROPOSALS_QUERY_KEY });
       notifySuccess('Student added successfully');
     },
     onError: notifyError
@@ -64,6 +65,7 @@ export const useRemoveStudent = (proposalId: ProposalId) => {
       getContainer().removeStudentFromProposalClassUseCase.execute({ proposalId, studentId, classId, config: defaultSchedulingConfig }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: PROPOSAL_DETAIL_QUERY_KEY(proposalId) });
+      queryClient.invalidateQueries({ queryKey: PROPOSALS_QUERY_KEY });
       notifySuccess('Student removed successfully');
     },
     onError: notifyError
@@ -77,6 +79,7 @@ export const useSwapStudents = (proposalId: ProposalId) => {
       getContainer().swapStudentsBetweenProposalClassesUseCase.execute({ proposalId, studentId1, classId1, studentId2, classId2, config: defaultSchedulingConfig }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: PROPOSAL_DETAIL_QUERY_KEY(proposalId) });
+      queryClient.invalidateQueries({ queryKey: PROPOSALS_QUERY_KEY });
       notifySuccess('Students swapped successfully');
     },
     onError: notifyError
@@ -90,6 +93,7 @@ export const useAssignTeacher = (proposalId: ProposalId) => {
       getContainer().assignTeacherToProposalClassUseCase.execute({ proposalId, teacherId, classId, config: defaultSchedulingConfig }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: PROPOSAL_DETAIL_QUERY_KEY(proposalId) });
+      queryClient.invalidateQueries({ queryKey: PROPOSALS_QUERY_KEY });
       notifySuccess('Teacher assigned successfully');
     },
     onError: notifyError
@@ -103,6 +107,7 @@ export const useChangeSchedule = (proposalId: ProposalId) => {
       getContainer().changeProposalClassScheduleUseCase.execute({ proposalId, classId, weekDay, startTime, endTime, config: defaultSchedulingConfig }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: PROPOSAL_DETAIL_QUERY_KEY(proposalId) });
+      queryClient.invalidateQueries({ queryKey: PROPOSALS_QUERY_KEY });
       notifySuccess('Schedule updated successfully');
     },
     onError: notifyError

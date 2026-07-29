@@ -30,6 +30,7 @@ describe('ApproveProposalUseCase', () => {
 
     const mockProposalRepo: IProposalRepository = {
       findById: vi.fn().mockResolvedValue(proposal),
+      findActiveDraft: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
@@ -49,6 +50,7 @@ describe('ApproveProposalUseCase', () => {
   it('should throw an error if proposal is not found', async () => {
     const mockProposalRepo: IProposalRepository = {
       findById: vi.fn().mockResolvedValue(null),
+      findActiveDraft: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),

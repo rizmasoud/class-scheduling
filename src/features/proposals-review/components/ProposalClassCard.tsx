@@ -9,15 +9,17 @@ interface ProposalClassCardProps {
   proposalClass: ProposalClass;
   bookName: string;
   teacherName: string;
+  studentNames?: string[];
 }
 
 export const ProposalClassCard: React.FC<ProposalClassCardProps> = ({
   proposalClass,
   bookName,
   teacherName,
+  studentNames,
 }) => {
   const schedules = proposalClass.schedules || [];
-  const students: string[] = [...(proposalClass.studentIds || [])];
+  const students: string[] = studentNames || [...(proposalClass.studentIds || [])];
 
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>

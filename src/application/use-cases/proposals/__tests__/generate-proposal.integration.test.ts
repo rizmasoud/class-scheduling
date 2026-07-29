@@ -68,7 +68,10 @@ describe('GenerateProposalUseCase (Integration)', () => {
       teacherRepo: { findAllActive: vi.fn() } as unknown as ITeacherRepository,
       studentRepo: { findAllActive: vi.fn() } as unknown as IStudentRepository,
       classRepo: { findAllActive: vi.fn() } as unknown as IClassRepository,
-      proposalRepo: { save: vi.fn().mockImplementation((p) => Promise.resolve(p)) } as unknown as IProposalRepository,
+      proposalRepo: { 
+        findActiveDraft: vi.fn().mockResolvedValue(null),
+        save: vi.fn().mockImplementation((p) => Promise.resolve(p)) 
+      } as unknown as IProposalRepository,
     };
   };
 

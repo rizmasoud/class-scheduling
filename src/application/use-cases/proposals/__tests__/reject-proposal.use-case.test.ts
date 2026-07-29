@@ -30,6 +30,7 @@ describe('RejectProposalUseCase', () => {
 
     const mockProposalRepo: IProposalRepository = {
       findById: vi.fn().mockResolvedValue(proposal),
+      findActiveDraft: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
@@ -43,13 +44,14 @@ describe('RejectProposalUseCase', () => {
 
     expect(mockProposalRepo.findById).toHaveBeenCalledWith('p-1');
     expect(mockProposalRepo.save).toHaveBeenCalled();
-    expect(result.status).toBe('Closed');
+    expect(result.status).toBe('Archived');
     expect(result.classes![0].status).toBe('Rejected');
   });
 
   it('should throw an error if proposal is not found', async () => {
     const mockProposalRepo: IProposalRepository = {
       findById: vi.fn().mockResolvedValue(null),
+      findActiveDraft: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),

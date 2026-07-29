@@ -61,7 +61,28 @@ describe('ProposalRepository', () => {
     expect(found?.classes).toHaveLength(0);
   });
 
-  it('should soft delete (archive) a proposal', async () => {
+  it('should find active draft proposal', async () => {
+    await repo.save(sampleProposal);
+
+    const activeDraft = await repo.findActiveDraft();
+    expect(activeDraft).not.toBeNull();
+    expect(activeDraft?.id).toBe('prop-1');
+    expect(activeDraft?.status).toBe('Draft');
+  });
+
+  it('should not return committed or archived proposals as active draft', async () => {
+    const committedProposal: SchedulingProposal = {
+      ...sampleProposal,
+      id: 'prop-committed',
+      status: 'Committed'
+    };
+    await repo.save(committedProposal);
+
+    const activeDraft = await repo.findActiveDraft();
+    expect(activeDraft).toBeNull();
+  });
+
+  it('should soft delete (archive) a draft proposal and update status to Archived', async () => {
     await repo.save(sampleProposal);
     await repo.archive('prop-1');
 
@@ -70,5 +91,17 @@ describe('ProposalRepository', () => {
 
     const allProposals = await repo.findAll();
     expect(allProposals).toHaveLength(1);
+    expect(allProposals[0].status).toBe('Archived');
+  });
+
+  it('should throw error when attempting to archive a non-draft proposal', async () => {
+    const committedProposal: SchedulingProposal = {
+      ...sampleProposal,
+      id: 'prop-committed',
+      status: 'Committed'
+    };
+    await repo.save(committedProposal);
+
+    await expect(repo.archive('prop-committed')).rejects.toThrow(/Only Draft proposals may be archived/);
   });
 });

@@ -7,7 +7,8 @@ describe('ArchiveProposalUseCase', () => {
     const mockRepo: IProposalRepository = {
       save: vi.fn(),
       saveWithClasses: vi.fn(),
-      findById: vi.fn(),
+      findById: vi.fn().mockResolvedValue({ id: 'p-1', status: 'Draft' }),
+      findActiveDraft: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
