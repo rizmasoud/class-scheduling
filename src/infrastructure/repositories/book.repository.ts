@@ -32,6 +32,7 @@ export class BookRepository
   }
 
   async findAllActive(): Promise<readonly Book[]> {
+    console.log("[6] BookRepository.findAllActive() called");
     const results = await this.db
       .select()
       .from(this.table)
@@ -41,6 +42,7 @@ export class BookRepository
   }
 
   async save(book: Book): Promise<Book> {
+    console.log("[1] BookRepository.save() received book:", book);
     const persistenceModel = BookMapper.toPersistence(book);
 
     const existing = await super.executeFindById(book.id as string);
