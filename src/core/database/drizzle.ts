@@ -40,6 +40,9 @@ function parseSqlColumns(sql: string): string[] {
 
 export const initializeDrizzle = (tauriDb: Database) => {
   return drizzle(async (sql, params, method) => {
+    console.log("METHOD =", method);
+console.log("SQL =", sql);
+console.log("PARAMS =", params);
     try {
       if (method === 'run') {
         await tauriDb.execute(sql, params);
