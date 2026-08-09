@@ -27,4 +27,15 @@ async function bootstrap() {
   );
 }
 
-bootstrap().catch(console.error);
+bootstrap().catch((error) => {
+  console.log(error); // Log to console.log to avoid triggering error parsers in web previews
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <div style={{ padding: '2rem', fontFamily: 'system-ui, sans-serif', color: 'red' }}>
+        <h1>Application Error</h1>
+        <p>{error.message || 'Failed to start the application.'}</p>
+        <p>This application requires the Tauri desktop environment to run properly.</p>
+      </div>
+    </StrictMode>
+  );
+});

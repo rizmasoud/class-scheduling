@@ -39,12 +39,20 @@ function parseSqlColumns(sql: string): string[] {
 }
 
 export const initializeDrizzle = (tauriDb: Database) => {
-  return drizzle(async (sql, params, method) => {
-    console.log("METHOD =", method);
-console.log("SQL =", sql);
-console.log("PARAMS =", params);
+  const db = drizzle(async (sql, params, method) => {
     try {
       if (method === 'run') {
+        // Intercept transaction commands since tauri-plugin-sql connection pool 
+        // will deadlock if BEGIN and DELETE use different connections.
+        const lowerSql = sql.trim().toLowerCase();
+        if (lowerSql === 'begin' || 
+            lowerSql === 'commit' || 
+            lowerSql === 'rollback' ||
+            lowerSql.startsWith('savepoint') ||
+            lowerSql.startsWith('release savepoint') ||
+            lowerSql.startsWith('rollback to savepoint')) {
+          return { rows: [] };
+        }
         await tauriDb.execute(sql, params);
         return { rows: [] };
       }
@@ -70,8 +78,10 @@ console.log("PARAMS =", params);
       // Map objects back to arrays of values as expected by Drizzle
       return { rows: result.map(Object.values) };
     } catch (error) {
-      logger.error('Database query failed', error);
+      logger.error('Database query failed:', error);
       throw new DatabaseError('A database operation failed.');
     }
   });
+
+  return db;
 };

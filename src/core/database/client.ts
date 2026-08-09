@@ -2,12 +2,10 @@ import Database from '@tauri-apps/plugin-sql';
 import { initializeDrizzle } from './drizzle';
 import { appConfig } from '@/core/config';
 import { logger } from '@/core/logger';
-import { DatabaseError } from '@/core/errors';
-import { MockDatabase } from './mock-db';
 import { isTauri } from '@tauri-apps/api/core';
 
 let _db: ReturnType<typeof initializeDrizzle> | null = null;
-let _tauriDb: Database | any | null = null;
+let _tauriDb: Database | null = null;
 
 /**
  * Initializes and returns the Drizzle database client.
@@ -26,21 +24,19 @@ export const getDatabase = async () => {
       console.log("Using REAL SQLite");
       // The database name is dynamically loaded from our centralized app config
       _tauriDb = await Database.load(`sqlite:${appConfig.database.name}`);
+      
+      // Enable WAL mode to prevent readers from blocking writers (avoids SQLITE_BUSY)
+      // and enable foreign keys just in case.
+      await _tauriDb.execute("PRAGMA journal_mode = WAL;");
+      await _tauriDb.execute("PRAGMA foreign_keys = ON;");
     } else {
-      console.log("Using MockDatabase");
-      logger.warn('Tauri environment not detected, falling back to mock database');
-      _tauriDb = new MockDatabase();
+      throw new Error("Tauri environment not detected. The real database is required.");
     }
     
     _db = initializeDrizzle(_tauriDb);
     return _db;
   } catch (error) {
-    console.log("Using MockDatabase");
-    logger.error('Failed to initialize local database connection', error);
-    // Fallback if load fails (e.g. in web preview)
-    logger.warn('Falling back to mock database due to error');
-    _tauriDb = new MockDatabase();
-    _db = initializeDrizzle(_tauriDb);
-    return _db;
+    logger.warn('Failed to initialize local database connection:', error);
+    throw error;
   }
 };
