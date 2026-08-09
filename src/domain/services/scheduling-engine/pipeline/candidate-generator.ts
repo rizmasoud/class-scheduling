@@ -11,7 +11,6 @@ export class CandidateGenerator {
     config: SchedulingEngineConfig
   ): readonly ClassCandidate[] {
     const candidates: ClassCandidate[] = [];
-
     const studentsByBook = this.groupStudentsByBook(context.activeStudents, context.activeBooks);
 
     for (const book of context.activeBooks) {
@@ -32,6 +31,10 @@ export class CandidateGenerator {
         for (const teacher of eligibleTeachers) {
           for (const slot of timeSlots) {
             if (!this.isTeacherAvailable(teacher, slot)) {
+              continue;
+            }
+
+            if (!this.areStudentsAvailable(chunk, slot, context.activeStudents)) {
               continue;
             }
 
@@ -93,6 +96,32 @@ export class CandidateGenerator {
     return true;
   }
 
+  private areStudentsAvailable(studentIds: readonly string[], slot: TimeSlot, allStudents: readonly Student[]): boolean {
+    for (const studentId of studentIds) {
+      const student = allStudents.find(s => s.id === studentId);
+      if (!student || !student.preference) continue;
+      
+      const oddDays = ['Saturday', 'Monday', 'Wednesday'];
+      const evenDays = ['Sunday', 'Tuesday', 'Thursday'];
+      const isOdd = oddDays.includes(slot.weekDay);
+      const isEven = evenDays.includes(slot.weekDay);
+
+      const pattern = student.preference.availableDayPattern;
+      if (pattern === 'Odd' && !isOdd) return false;
+      if (pattern === 'Even' && !isEven) return false;
+
+      if (student.preference.unavailableTimeRanges) {
+        for (const range of student.preference.unavailableTimeRanges) {
+          const [start, end] = range.split('-');
+          if (this.timeOverlaps(slot.startTime, slot.endTime, start, end)) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
   private slotConflictsWithExistingClasses(
     studentIds: readonly string[], 
     teacher: Teacher, 
@@ -130,6 +159,7 @@ export class CandidateGenerator {
     const e1 = this.parseTime(end1);
     const s2 = this.parseTime(start2);
     const e2 = this.parseTime(end2);
+
     return Math.max(s1, s2) < Math.min(e1, e2);
   }
 

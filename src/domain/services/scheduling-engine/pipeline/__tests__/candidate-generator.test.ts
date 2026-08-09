@@ -192,4 +192,101 @@ describe('CandidateGenerator', () => {
     const candidates = generator.generate(context, [slot1], config);
     expect(candidates).toHaveLength(0);
   });
+
+  it('allows candidate if student available according to preference', () => {
+    const generator = new CandidateGenerator();
+    const availableStudent: Student = {
+      ...student1,
+      preference: {
+        id: 'pref1',
+        studentId: 'st1',
+        availableDayPattern: 'Odd', // Monday is Odd
+        unavailableTimeRanges: null,
+        notes: null
+      }
+    };
+    const context: SchedulingContext = {
+      activeBooks: [book1],
+      activeTeachers: [teacher1],
+      activeStudents: [availableStudent],
+      activeClasses: []
+    };
+    const candidates = generator.generate(context, [slot1], config);
+    expect(candidates).toHaveLength(1);
+  });
+
+  it('skips if student unavailable on that day', () => {
+    const generator = new CandidateGenerator();
+    const unavailableStudent: Student = {
+      ...student1,
+      preference: {
+        id: 'pref1',
+        studentId: 'st1',
+        availableDayPattern: 'Even', // Monday is Odd, student only available Even
+        unavailableTimeRanges: null,
+        notes: null
+      }
+    };
+    const context: SchedulingContext = {
+      activeBooks: [book1],
+      activeTeachers: [teacher1],
+      activeStudents: [unavailableStudent],
+      activeClasses: []
+    };
+    const candidates = generator.generate(context, [slot1], config);
+    expect(candidates).toHaveLength(0);
+  });
+
+  it('skips if student unavailable during that time', () => {
+    const generator = new CandidateGenerator();
+    const unavailableStudent: Student = {
+      ...student1,
+      preference: {
+        id: 'pref1',
+        studentId: 'st1',
+        availableDayPattern: 'Odd',
+        unavailableTimeRanges: ['09:00-11:00'],
+        notes: null
+      }
+    };
+    const context: SchedulingContext = {
+      activeBooks: [book1],
+      activeTeachers: [teacher1],
+      activeStudents: [unavailableStudent],
+      activeClasses: []
+    };
+    const candidates = generator.generate(context, [slot1], config);
+    expect(candidates).toHaveLength(0);
+  });
+
+  it('skips if slot conflicts with existing class for student', () => {
+    const generator = new CandidateGenerator();
+    const activeClass: Class = {
+      id: 'c1',
+      name: 'Class 1',
+      bookId: 'b2',
+      teacherId: 't2', // different teacher
+      status: 'Active',
+      minCapacity: 5,
+      targetCapacity: 10,
+      maxCapacity: 15,
+      notes: null,
+      schedules: [
+        { id: 'sc1', classId: 'c1', weekDay: 'Monday', startTime: '09:00', endTime: '11:00' }
+      ],
+      enrollments: [
+        { id: 'en1', classId: 'c1', studentId: 'st1', enrollmentStatus: 'Active', joinedAt: '', leftAt: null }
+      ]
+    };
+
+    const context: SchedulingContext = {
+      activeBooks: [book1],
+      activeTeachers: [teacher1],
+      activeStudents: [student1],
+      activeClasses: [activeClass]
+    };
+
+    const candidates = generator.generate(context, [slot1], config);
+    expect(candidates).toHaveLength(0);
+  });
 });
