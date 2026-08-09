@@ -1,7 +1,7 @@
 use std::sync::Mutex;
 use rusqlite::{Connection, params_from_iter, types::ValueRef};
 use serde_json::Value as JsonValue;
-use tauri::{State, Manager};
+use tauri::State;
 
 struct DrizzleDbState {
     conn: Mutex<Option<Connection>>,
@@ -50,7 +50,7 @@ fn execute_drizzle_sql(
     let mut stmt = conn.prepare(&sql).map_err(|e| e.to_string())?;
     let col_count = stmt.column_count();
 
-    if !stmt.is_query() {
+    if col_count == 0 {
         stmt.execute(params_from_iter(sql_params.iter())).map_err(|e| e.to_string())?;
         return Ok(Vec::new());
     }
