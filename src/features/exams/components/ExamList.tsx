@@ -1,5 +1,5 @@
-import { Table, ActionIcon, Group, Text, Loader, Center, Badge } from '@mantine/core';
-import { Pencil } from 'lucide-react';
+import { Table, ActionIcon, Group, Text, Loader, Center, Badge, Tooltip } from '@mantine/core';
+import { Pencil, ArrowUpCircle } from 'lucide-react';
 import { ExamResult, Class, Student } from '@/domain/models';
 
 interface Props {
@@ -8,9 +8,10 @@ interface Props {
   students: readonly Student[];
   isLoading: boolean;
   onEdit: (exam: ExamResult) => void;
+  onPromote: (exam: ExamResult) => void;
 }
 
-export function ExamList({ exams, classes, students, isLoading, onEdit }: Props) {
+export function ExamList({ exams, classes, students, isLoading, onEdit, onPromote }: Props) {
   if (isLoading) {
     return <Center p="xl"><Loader /></Center>;
   }
@@ -61,9 +62,16 @@ export function ExamList({ exams, classes, students, isLoading, onEdit }: Props)
         <Table.Td>{exam.notes || '-'}</Table.Td>
         <Table.Td>
           <Group gap="xs">
-            <ActionIcon variant="subtle" color="blue" onClick={() => onEdit(exam)}>
-              <Pencil size={16} />
-            </ActionIcon>
+            <Tooltip label="Edit Exam">
+              <ActionIcon variant="subtle" color="blue" onClick={() => onEdit(exam)}>
+                <Pencil size={16} />
+              </ActionIcon>
+            </Tooltip>
+            <Tooltip label="Promote Student">
+              <ActionIcon variant="subtle" color="green" onClick={() => onPromote(exam)}>
+                <ArrowUpCircle size={16} />
+              </ActionIcon>
+            </Tooltip>
           </Group>
         </Table.Td>
       </Table.Tr>

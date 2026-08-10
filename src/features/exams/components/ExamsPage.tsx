@@ -7,22 +7,27 @@ import { useActiveStudents } from '@/features/students/hooks/use-students';
 import { ExamList } from './ExamList';
 import { CreateExamDialog } from './CreateExamDialog';
 import { EditExamDialog } from './EditExamDialog';
+import { PromoteStudentDialog } from '@/features/students/components/PromoteStudentDialog';
+import { useActiveBooks } from '@/features/books/hooks/use-books';
 import { ExamResult } from '@/domain/models';
 
 export function ExamsPage() {
   const { data: exams, isLoading: examsLoading, refetch: refetchExams } = useAllExams();
   const { data: classes, isLoading: classesLoading, refetch: refetchClasses } = useActiveClasses();
   const { data: students, isLoading: studentsLoading, refetch: refetchStudents } = useActiveStudents();
-  
+  const { data: books, isLoading: booksLoading, refetch: refetchBooks } = useActiveBooks();
+
   const [createOpened, setCreateOpened] = useState(false);
   const [editExam, setEditExam] = useState<ExamResult | null>(null);
+  const [promoteExam, setPromoteExam] = useState<ExamResult | null>(null);
 
-  const isLoading = examsLoading || classesLoading || studentsLoading;
+  const isLoading = examsLoading || classesLoading || studentsLoading || booksLoading;
 
   const handleRefresh = () => {
     refetchExams();
     refetchClasses();
     refetchStudents();
+    refetchBooks();
   };
 
   return (
@@ -53,6 +58,7 @@ export function ExamsPage() {
         students={students || []}
         isLoading={isLoading} 
         onEdit={setEditExam}
+        onPromote={setPromoteExam}
       />
 
       <CreateExamDialog 
@@ -68,6 +74,15 @@ export function ExamsPage() {
         exam={editExam}
         classes={classes || []}
         students={students || []}
+      />
+
+      <PromoteStudentDialog
+        opened={!!promoteExam}
+        onClose={() => setPromoteExam(null)}
+        exam={promoteExam}
+        classes={classes || []}
+        students={students || []}
+        books={books || []}
       />
     </Stack>
   );

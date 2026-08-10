@@ -10,7 +10,7 @@ const schema = z.object({
   classStudentId: z.string().min(1, 'Enrollment is required'),
   score: z.number().min(0, 'Score must be at least 0').max(100, 'Score cannot exceed 100'),
   resultStatus: z.enum(['Passed', 'Conditional', 'Failed'] as const),
-  supervisorDecision: z.enum(['RepeatBook', 'FreeClass', 'MoveToLowerLevel'] as const).nullable().optional(),
+  supervisorDecision: z.enum(['RepeatBook', 'FreeClass', 'MoveToLowerLevel', 'Promote'] as const).nullable().optional(),
   examDate: z.string().min(1, 'Exam date is required'),
   notes: z.string().nullable().optional(),
 });
@@ -127,6 +127,7 @@ export function CreateExamDialog({ opened, onClose, classes, students }: Props) 
                   { value: 'RepeatBook', label: 'Repeat Book' },
                   { value: 'FreeClass', label: 'Free Class' },
                   { value: 'MoveToLowerLevel', label: 'Move to Lower Level' },
+                  { value: 'Promote', label: 'Promote' },
                 ]}
                 error={errors.supervisorDecision?.message}
                 value={field.value || null}

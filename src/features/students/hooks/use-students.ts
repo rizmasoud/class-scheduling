@@ -42,3 +42,17 @@ export const useArchiveStudent = () => {
     },
   });
 };
+
+import { PromoteStudentDTO } from '@/application/use-cases/students/promote-student.use-case';
+
+export const usePromoteStudent = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (dto: PromoteStudentDTO) => getContainer().promoteStudentUseCase.execute(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: STUDENTS_QUERY_KEY });
+      // Might want to invalidate enrollments/classes too
+      queryClient.invalidateQueries({ queryKey: ['classes', 'active'] });
+    },
+  });
+};

@@ -53,6 +53,7 @@ import { UpdateStudentUseCase } from '@/application/use-cases/students/update-st
 import { GetStudentByIdUseCase } from '@/application/use-cases/students/get-student-by-id.use-case';
 import { CreateStudentUseCase } from '@/application/use-cases/students/create-student.use-case';
 import { ArchiveStudentUseCase } from '@/application/use-cases/students/archive-student.use-case';
+import { PromoteStudentUseCase } from '@/application/use-cases/students/promote-student.use-case';
 import { EnrollStudentUseCase } from '@/application/use-cases/enrollments/enroll-student.use-case';
 import { UnenrollStudentUseCase } from '@/application/use-cases/enrollments/unenroll-student.use-case';
 import { MoveStudentBetweenClassesUseCase } from '@/application/use-cases/enrollments/move-student-between-classes.use-case';
@@ -107,6 +108,7 @@ export interface AppContainer {
   enrollStudentUseCase: EnrollStudentUseCase;
   unenrollStudentUseCase: UnenrollStudentUseCase;
   moveStudentBetweenClassesUseCase: MoveStudentBetweenClassesUseCase;
+  promoteStudentUseCase: PromoteStudentUseCase;
   getAllExamsUseCase: GetAllExamsUseCase;
   updateExamUseCase: UpdateExamUseCase;
   createExamUseCase: CreateExamUseCase;
@@ -196,6 +198,13 @@ export const initContainer = async (): Promise<AppContainer> => {
   const enrollStudentUseCase = new EnrollStudentUseCase(classRepository, studentRepository);
   const unenrollStudentUseCase = new UnenrollStudentUseCase(classRepository);
   const moveStudentBetweenClassesUseCase = new MoveStudentBetweenClassesUseCase(classRepository, studentRepository);
+  const promoteStudentUseCase = new PromoteStudentUseCase(
+    db,
+    (tx) => new StudentRepository(tx),
+    (tx) => new ClassRepository(tx),
+    bookRepository,
+    examRepository
+  );
   const getAllExamsUseCase = new GetAllExamsUseCase(examRepository);
   const updateExamUseCase = new UpdateExamUseCase(examRepository);
   const createExamUseCase = new CreateExamUseCase(examRepository);
@@ -247,6 +256,7 @@ export const initContainer = async (): Promise<AppContainer> => {
     enrollStudentUseCase,
     unenrollStudentUseCase,
     moveStudentBetweenClassesUseCase,
+    promoteStudentUseCase,
     getAllExamsUseCase,
     updateExamUseCase,
     createExamUseCase,

@@ -49,6 +49,7 @@ export enum SupervisorDecision {
   RepeatBook = 'RepeatBook',
   FreeClass = 'FreeClass',
   MoveToLowerLevel = 'MoveToLowerLevel',
+  Promote = 'Promote',
 }
 
 export enum SchedulingProposalStatus {

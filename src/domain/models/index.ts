@@ -17,7 +17,7 @@ export type StudentResultStatus = 'Passed' | 'Conditional' | 'Failed';
 export type AvailableDayPattern = 'Odd' | 'Even' | 'Both';
 export type WeekDay = 'Saturday' | 'Sunday' | 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday';
 export type EnrollmentStatus = 'Active' | 'Completed' | 'Dropped';
-export type SupervisorDecision = 'RepeatBook' | 'FreeClass' | 'MoveToLowerLevel';
+export type SupervisorDecision = 'RepeatBook' | 'FreeClass' | 'MoveToLowerLevel' | 'Promote';
 export type SchedulingProposalStatus = 'Draft' | 'Committed' | 'Archived';
 export type ProposalClassStatus = 'Pending' | 'Approved' | 'Rejected';
 

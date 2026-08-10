@@ -50,3 +50,24 @@ export function unenrollStudent(clazz: Class, studentId: StudentId, date: string
     enrollments: updatedEnrollments
   };
 }
+
+export function completeStudentEnrollment(clazz: Class, studentId: StudentId, date: string): Class {
+  const enrollments = clazz.enrollments || [];
+  const activeEnrollmentIndex = enrollments.findIndex(e => e.studentId === studentId && e.enrollmentStatus === 'Active');
+  
+  if (activeEnrollmentIndex === -1) {
+    throw new Error('Student is not actively enrolled in this class');
+  }
+
+  const updatedEnrollments = [...enrollments];
+  updatedEnrollments[activeEnrollmentIndex] = {
+    ...updatedEnrollments[activeEnrollmentIndex],
+    enrollmentStatus: 'Completed',
+    leftAt: date
+  };
+
+  return {
+    ...clazz,
+    enrollments: updatedEnrollments
+  };
+}
