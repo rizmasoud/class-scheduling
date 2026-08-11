@@ -97,7 +97,7 @@ describe('SchedulingEngine', () => {
       totalScore: 100,
       reasons: ['Good']
     };
-    expect(mockOptimizer.optimize).toHaveBeenCalledWith([expectedEvaluated]);
+    expect(mockOptimizer.optimize).toHaveBeenCalledWith([expectedEvaluated], expect.any(Object));
 
     // Verify ProposalAssembler call
     expect(mockProposalAssembler.assemble).toHaveBeenCalledOnce();
@@ -170,7 +170,7 @@ describe('SchedulingEngine', () => {
 
     // Assert
     expect(result).toBe(expectedProposal);
-    expect(mockOptimizer.optimize).toHaveBeenCalledWith([]);
+    expect(mockOptimizer.optimize).toHaveBeenCalledWith([], expect.any(Object));
     expect(mockProposalAssembler.assemble).toHaveBeenCalledWith(expect.objectContaining({
       candidates: []
     }));

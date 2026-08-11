@@ -1,4 +1,4 @@
-import { StudentId, ExamId } from '@/domain/models';
+import { StudentId, ExamId, Class } from '@/domain/models';
 import { IStudentRepository } from '@/domain/repositories/i-student.repository';
 import { IClassRepository } from '@/domain/repositories/i-class.repository';
 import { IBookRepository } from '@/domain/repositories/i-book.repository';
@@ -35,7 +35,7 @@ export class PromoteStudentUseCase {
 
     // Verify the exam belongs to an enrollment of this student
     const activeClasses = await this.classRepositoryFactory(this.db as any).findAllActive();
-    let currentClass = null;
+    let currentClass: Class | null = null;
     for (const clazz of activeClasses) {
       const matchingEnrollment = clazz.enrollments?.find(e => e.id === examResult.classStudentId && e.studentId === student.id);
       if (matchingEnrollment) {

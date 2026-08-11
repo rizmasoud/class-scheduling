@@ -12,6 +12,26 @@ export class CapacityLimitRule implements ISchedulingRule {
     context: SchedulingContext,
     config: SchedulingEngineConfig
   ): RuleResult {
+    const studentCount = candidate.studentIds.length;
+    
+    if (studentCount > config.maximumCapacity) {
+      return {
+        valid: false,
+        score: 0,
+        severity: RuleSeverity.Critical,
+        reasons: [`Class exceeds maximum capacity of ${config.maximumCapacity}`]
+      };
+    }
+    
+    if (studentCount < config.minimumCapacity) {
+      return {
+        valid: false,
+        score: 0,
+        severity: RuleSeverity.Critical,
+        reasons: [`Class does not meet minimum capacity of ${config.minimumCapacity}`]
+      };
+    }
+
     return {
       valid: true,
       score: 0,

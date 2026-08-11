@@ -57,7 +57,7 @@ export class SchedulingEngine {
       }
     }
 
-    const optimizedCandidates = this.optimizer.optimize(evaluatedCandidates);
+    const optimizedCandidates = this.optimizer.optimize(evaluatedCandidates, context);
 
     const assemblerCandidates: AssemblerCandidate[] = optimizedCandidates.map(cand => {
       const evalCand = evaluatedMap.get(cand)!;

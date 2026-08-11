@@ -1,3 +1,4 @@
+import { SchedulingContext } from '../models/scheduling-context';
 import { ClassCandidate } from '../models/class-candidate';
 import { TimeSlot } from '../models/time-slot';
 
@@ -8,12 +9,12 @@ export interface EvaluatedCandidate {
 }
 
 export class Optimizer {
-  optimize(evaluatedCandidates: readonly EvaluatedCandidate[]): readonly ClassCandidate[] {
+  optimize(evaluatedCandidates: readonly EvaluatedCandidate[], context: SchedulingContext): readonly ClassCandidate[] {
     const sorted = [...evaluatedCandidates].sort((a, b) => b.totalScore - a.totalScore);
     const accepted: ClassCandidate[] = [];
 
     for (const evaluated of sorted) {
-      if (!this.hasConflict(evaluated.candidate, accepted)) {
+      if (!this.hasConflict(evaluated.candidate, accepted, context)) {
         accepted.push(evaluated.candidate);
       }
     }
@@ -21,15 +22,32 @@ export class Optimizer {
     return accepted;
   }
 
-  private hasConflict(candidate: ClassCandidate, accepted: readonly ClassCandidate[]): boolean {
+  private hasConflict(candidate: ClassCandidate, accepted: readonly ClassCandidate[], context: SchedulingContext): boolean {
+    const teacher = context.activeTeachers.find(t => t.id === candidate.teacherId);
+    if (teacher?.preference?.maxWeeklySessions != null) {
+      let currentSessions = 0;
+      for (const activeClass of context.activeClasses) {
+        if (activeClass.teacherId === teacher.id && activeClass.schedules) {
+          currentSessions += activeClass.schedules.length;
+        }
+      }
+      for (const acc of accepted) {
+        if (acc.teacherId === teacher.id) {
+          currentSessions += 1;
+        }
+      }
+      if (currentSessions >= teacher.preference.maxWeeklySessions) {
+        return true;
+      }
+    }
     for (const acc of accepted) {
+      const sharedStudents = candidate.studentIds.some(id => acc.studentIds.includes(id));
+      if (sharedStudents) {
+        return true;
+      }
+
       if (this.slotsOverlap(candidate.timeSlot, acc.timeSlot)) {
         if (candidate.teacherId === acc.teacherId) {
-          return true;
-        }
-
-        const sharedStudents = candidate.studentIds.some(id => acc.studentIds.includes(id));
-        if (sharedStudents) {
           return true;
         }
       }
