@@ -10,7 +10,7 @@ describe('CreateTeacherUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            archive: vi.fn(),
+      archive: vi.fn(),
     };
 
     const useCase = new CreateTeacherUseCase(mockRepo);
@@ -24,7 +24,6 @@ describe('CreateTeacherUseCase', () => {
     expect(result.notes).toBeNull();
     expect(result.preference).toBeNull();
     expect(result.skills).toHaveLength(0);
-
     expect(mockRepo.save).toHaveBeenCalledTimes(1);
     expect(mockRepo.save).toHaveBeenCalledWith(result);
   });
@@ -36,7 +35,7 @@ describe('CreateTeacherUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            archive: vi.fn(),
+      archive: vi.fn(),
     };
 
     const useCase = new CreateTeacherUseCase(mockRepo);
@@ -57,7 +56,28 @@ describe('CreateTeacherUseCase', () => {
     expect(result.preference?.maxWeeklySessions).toBe(10);
     expect(result.skills).toHaveLength(1);
     expect(result.skills?.[0].bookId).toBe('book-1');
-
     expect(mockRepo.save).toHaveBeenCalledTimes(1);
+  });
+
+  it('should create and save a new teacher with multiple unavailable time ranges', async () => {
+    const mockRepo: ITeacherRepository = {
+      save: vi.fn().mockImplementation((teacher) => Promise.resolve(teacher)),
+      findById: vi.fn(),
+      findAll: vi.fn(),
+      findAllActive: vi.fn(),
+      findMany: vi.fn(),      
+      archive: vi.fn(),
+    };
+    const useCase = new CreateTeacherUseCase(mockRepo);
+    
+    const result = await useCase.execute({
+      fullName: 'Time Range Teacher',
+      preference: {
+        unavailableTimeRanges: ['10:00-12:00', '16:00-18:00']
+      }
+    });
+
+    expect(result.preference).toBeDefined();
+    expect(result.preference?.unavailableTimeRanges).toEqual(['10:00-12:00', '16:00-18:00']);
   });
 });

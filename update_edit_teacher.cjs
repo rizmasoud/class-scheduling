@@ -1,4 +1,6 @@
+const fs = require('fs');
 
+const newCode = `
 import { useEffect } from 'react';
 import { Modal, Button, TextInput, Textarea, MultiSelect, NumberInput, Group, Stack, Divider, Text, ActionIcon, Select } from '@mantine/core';
 import { IconPlus, IconTrash } from '@tabler/icons-react';
@@ -11,8 +13,8 @@ import { notifications } from '@mantine/notifications';
 import { Teacher } from '@/domain/models';
 
 const timeRangeSchema = z.object({
-  start: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'HH:mm format required'),
-  end: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'HH:mm format required'),
+  start: z.string().regex(/^([01]\\d|2[0-3]):([0-5]\\d)$/, 'HH:mm format required'),
+  end: z.string().regex(/^([01]\\d|2[0-3]):([0-5]\\d)$/, 'HH:mm format required'),
 }).refine(data => data.start < data.end, {
   message: 'Start must be before end',
   path: ['end'],
@@ -82,7 +84,7 @@ export function EditTeacherDialog({ opened, onClose, teacher }: Props) {
 
   const onSubmit = (values: FormValues) => {
     const unavailableTimeRanges = values.unavailableTimeRanges && values.unavailableTimeRanges.length > 0 
-      ? values.unavailableTimeRanges.map(r => `${r.start}-${r.end}`)
+      ? values.unavailableTimeRanges.map(r => \`\${r.start}-\${r.end}\`)
       : null;
 
     updateTeacher.mutate({
@@ -214,7 +216,7 @@ export function EditTeacherDialog({ opened, onClose, teacher }: Props) {
             {fields.map((field, index) => (
               <Group key={field.id} mb="xs" align="flex-start">
                 <Controller
-                  name={`unavailableTimeRanges.${index}.start` as const}
+                  name={\`unavailableTimeRanges.\${index}.start\` as const}
                   control={control}
                   render={({ field: inputField }) => (
                     <TextInput
@@ -227,7 +229,7 @@ export function EditTeacherDialog({ opened, onClose, teacher }: Props) {
                 />
                 <Text mt="xs">-</Text>
                 <Controller
-                  name={`unavailableTimeRanges.${index}.end` as const}
+                  name={\`unavailableTimeRanges.\${index}.end\` as const}
                   control={control}
                   render={({ field: inputField }) => (
                     <TextInput
@@ -268,3 +270,7 @@ export function EditTeacherDialog({ opened, onClose, teacher }: Props) {
     </Modal>
   );
 }
+`;
+
+fs.writeFileSync('src/features/teachers/components/EditTeacherDialog.tsx', newCode);
+console.log('updated edit teacher dialog');

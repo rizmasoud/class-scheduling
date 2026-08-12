@@ -1,25 +1,24 @@
+const fs = require('fs');
 
-import { useEffect } from 'react';
+const newCode = `
 import { Modal, Button, TextInput, Textarea, MultiSelect, NumberInput, Group, Stack, Divider, Text, ActionIcon, Select } from '@mantine/core';
 import { IconPlus, IconTrash } from '@tabler/icons-react';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useUpdateTeacher } from '../hooks/use-teachers';
+import { useCreateTeacher } from '../hooks/use-teachers';
 import { useActiveBooks } from '@/features/books/hooks/use-books';
 import { notifications } from '@mantine/notifications';
-import { Teacher } from '@/domain/models';
 
 const timeRangeSchema = z.object({
-  start: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'HH:mm format required'),
-  end: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'HH:mm format required'),
+  start: z.string().regex(/^([01]\\d|2[0-3]):([0-5]\\d)$/, 'HH:mm format required'),
+  end: z.string().regex(/^([01]\\d|2[0-3]):([0-5]\\d)$/, 'HH:mm format required'),
 }).refine(data => data.start < data.end, {
   message: 'Start must be before end',
   path: ['end'],
 });
 
 const schema = z.object({
-  id: z.string(),
   fullName: z.string().min(1, 'Full name is required'),
   maxWeeklySessions: z.number().nullable().optional(),
   skills: z.array(z.string()).optional(),
@@ -34,17 +33,15 @@ type FormValues = z.infer<typeof schema>;
 interface Props {
   opened: boolean;
   onClose: () => void;
-  teacher: Teacher | null;
 }
 
-export function EditTeacherDialog({ opened, onClose, teacher }: Props) {
-  const updateTeacher = useUpdateTeacher();
+export function CreateTeacherDialog({ opened, onClose }: Props) {
+  const createTeacher = useCreateTeacher();
   const { data: books, isLoading: booksLoading } = useActiveBooks();
 
   const { control, handleSubmit, reset, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      id: '',
       fullName: '',
       maxWeeklySessions: null,
       skills: [],
@@ -60,33 +57,12 @@ export function EditTeacherDialog({ opened, onClose, teacher }: Props) {
     name: "unavailableTimeRanges"
   });
 
-  useEffect(() => {
-    if (teacher) {
-      const timeRanges = teacher.preference?.unavailableTimeRanges?.map(r => {
-        const [start, end] = r.split('-');
-        return { start, end };
-      }) || [];
-
-      reset({
-        id: teacher.id,
-        fullName: teacher.fullName,
-        maxWeeklySessions: teacher.preference?.maxWeeklySessions ?? null,
-        skills: teacher.skills?.map((s) => s.bookId) || [],
-        notes: teacher.notes || '',
-        unavailableDayPattern: teacher.preference?.unavailableDayPattern || 'None',
-        unavailableTimeRanges: timeRanges,
-        preferenceNotes: teacher.preference?.notes || '',
-      });
-    }
-  }, [teacher, reset]);
-
   const onSubmit = (values: FormValues) => {
     const unavailableTimeRanges = values.unavailableTimeRanges && values.unavailableTimeRanges.length > 0 
-      ? values.unavailableTimeRanges.map(r => `${r.start}-${r.end}`)
+      ? values.unavailableTimeRanges.map(r => \`\${r.start}-\${r.end}\`)
       : null;
 
-    updateTeacher.mutate({
-      id: values.id,
+    createTeacher.mutate({
       fullName: values.fullName,
       notes: values.notes || null,
       preference: {
@@ -95,21 +71,15 @@ export function EditTeacherDialog({ opened, onClose, teacher }: Props) {
         unavailableTimeRanges,
         notes: values.preferenceNotes || null,
       },
-      skills: values.skills?.map((bookId) => {
-        // Try to keep existing skill ID if possible, though repository often handles recreate
-        const existingSkill = teacher?.skills?.find(s => s.bookId === bookId);
-        return {
-          id: existingSkill?.id,
-          bookId
-        };
-      }) || [],
+      skills: values.skills?.map((bookId) => ({ bookId })) || [],
     }, {
       onSuccess: () => {
-        notifications.show({ title: 'Success', message: 'Teacher updated successfully', color: 'green' });
+        notifications.show({ title: 'Success', message: 'Teacher created successfully', color: 'green' });
+        reset();
         onClose();
       },
       onError: (error: any) => {
-        notifications.show({ title: 'Error', message: error.message || 'Failed to update teacher', color: 'red' });
+        notifications.show({ title: 'Error', message: error.message || 'Failed to create teacher', color: 'red' });
       },
     });
   };
@@ -117,7 +87,7 @@ export function EditTeacherDialog({ opened, onClose, teacher }: Props) {
   const bookOptions = books?.map((book) => ({ value: book.id, label: book.name })) || [];
 
   return (
-    <Modal opened={opened} onClose={onClose} title="Edit Teacher" centered size="lg">
+    <Modal opened={opened} onClose={onClose} title="Create Teacher" centered size="lg">
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack gap="md">
           <Controller
@@ -214,7 +184,7 @@ export function EditTeacherDialog({ opened, onClose, teacher }: Props) {
             {fields.map((field, index) => (
               <Group key={field.id} mb="xs" align="flex-start">
                 <Controller
-                  name={`unavailableTimeRanges.${index}.start` as const}
+                  name={\`unavailableTimeRanges.\${index}.start\` as const}
                   control={control}
                   render={({ field: inputField }) => (
                     <TextInput
@@ -227,7 +197,7 @@ export function EditTeacherDialog({ opened, onClose, teacher }: Props) {
                 />
                 <Text mt="xs">-</Text>
                 <Controller
-                  name={`unavailableTimeRanges.${index}.end` as const}
+                  name={\`unavailableTimeRanges.\${index}.end\` as const}
                   control={control}
                   render={({ field: inputField }) => (
                     <TextInput
@@ -261,10 +231,14 @@ export function EditTeacherDialog({ opened, onClose, teacher }: Props) {
 
           <Group justify="flex-end" mt="md">
             <Button variant="default" onClick={onClose}>Cancel</Button>
-            <Button type="submit" loading={updateTeacher.isPending}>Save</Button>
+            <Button type="submit" loading={createTeacher.isPending}>Create</Button>
           </Group>
         </Stack>
       </form>
     </Modal>
   );
 }
+`;
+
+fs.writeFileSync('src/features/teachers/components/CreateTeacherDialog.tsx', newCode);
+console.log('updated create teacher dialog');

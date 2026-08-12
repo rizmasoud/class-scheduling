@@ -10,7 +10,7 @@ describe('CreateStudentUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            archive: vi.fn(),
+      archive: vi.fn(),
     };
 
     const useCase = new CreateStudentUseCase(mockRepo);
@@ -25,7 +25,6 @@ describe('CreateStudentUseCase', () => {
     expect(result.currentBookId).toBe('book-1');
     expect(result.notes).toBeNull();
     expect(result.preference).toBeNull();
-
     expect(mockRepo.save).toHaveBeenCalledTimes(1);
     expect(mockRepo.save).toHaveBeenCalledWith(result);
   });
@@ -37,7 +36,7 @@ describe('CreateStudentUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            archive: vi.fn(),
+      archive: vi.fn(),
     };
 
     const useCase = new CreateStudentUseCase(mockRepo);
@@ -54,7 +53,30 @@ describe('CreateStudentUseCase', () => {
     expect(result.fullName).toBe('Jane Doe');
     expect(result.preference).toBeDefined();
     expect(result.preference?.availableDayPattern).toBe('Both');
-
     expect(mockRepo.save).toHaveBeenCalledTimes(1);
+  });
+
+  it('should create and save a new student with multiple unavailable time ranges', async () => {
+    const mockRepo: IStudentRepository = {
+      save: vi.fn().mockImplementation((student) => Promise.resolve(student)),
+      findById: vi.fn(),
+      findAll: vi.fn(),
+      findAllActive: vi.fn(),
+      findMany: vi.fn(),      
+      archive: vi.fn(),
+    };
+    const useCase = new CreateStudentUseCase(mockRepo);
+    
+    const result = await useCase.execute({
+      fullName: 'Time Range Student',
+      currentBookId: 'book-3',
+      preference: {
+        availableDayPattern: 'Both',
+        unavailableTimeRanges: ['08:00-10:00', '14:00-16:00']
+      }
+    });
+
+    expect(result.preference).toBeDefined();
+    expect(result.preference?.unavailableTimeRanges).toEqual(['08:00-10:00', '14:00-16:00']);
   });
 });

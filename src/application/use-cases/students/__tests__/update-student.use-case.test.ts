@@ -14,11 +14,11 @@ describe('UpdateStudentUseCase', () => {
 
     const mockRepo: IStudentRepository = {
       save: vi.fn().mockImplementation((student) => Promise.resolve(student)),
-      findById: vi.fn().mockResolvedValue(existingStudent),
+      findById: vi.fn().mockResolvedValue(existingStudent as any),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            archive: vi.fn(),
+      archive: vi.fn(),
     };
 
     const useCase = new UpdateStudentUseCase(mockRepo);
@@ -37,7 +37,6 @@ describe('UpdateStudentUseCase', () => {
     expect(result.currentBookId).toBe('book-2');
     expect(result.preference).toBeDefined();
     expect(result.preference?.availableDayPattern).toBe('Odd');
-
     expect(mockRepo.findById).toHaveBeenCalledWith('s-1');
     expect(mockRepo.save).toHaveBeenCalledWith(result);
   });
@@ -49,7 +48,7 @@ describe('UpdateStudentUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            archive: vi.fn(),
+      archive: vi.fn(),
     };
 
     const useCase = new UpdateStudentUseCase(mockRepo);
@@ -74,11 +73,11 @@ describe('UpdateStudentUseCase', () => {
 
     const mockRepo: IStudentRepository = {
       save: vi.fn().mockImplementation((student) => Promise.resolve(student)),
-      findById: vi.fn().mockResolvedValue(existingStudent),
+      findById: vi.fn().mockResolvedValue(existingStudent as any),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            archive: vi.fn(),
+      archive: vi.fn(),
     };
 
     const useCase = new UpdateStudentUseCase(mockRepo);
@@ -89,5 +88,34 @@ describe('UpdateStudentUseCase', () => {
     });
 
     expect(result.preference).toBeNull();
+  });
+
+  it('should update multiple unavailable time ranges', async () => {
+    const existingStudent = {
+      id: 's-1',
+      fullName: 'Old Name',
+      currentBookId: 'book-1',
+      notes: null,
+      preference: null,
+    };
+    const mockRepo: IStudentRepository = {
+      save: vi.fn().mockImplementation((student) => Promise.resolve(student)),
+      findById: vi.fn().mockResolvedValue(existingStudent as any),
+      findAll: vi.fn(),
+      findAllActive: vi.fn(),
+      findMany: vi.fn(),      
+      archive: vi.fn(),
+    };
+    const useCase = new UpdateStudentUseCase(mockRepo);
+    
+    const result = await useCase.execute({
+      id: 's-1',
+      preference: {
+        availableDayPattern: 'Odd',
+        unavailableTimeRanges: ['09:00-11:00', '15:00-17:00']
+      }
+    });
+
+    expect(result.preference?.unavailableTimeRanges).toEqual(['09:00-11:00', '15:00-17:00']);
   });
 });
