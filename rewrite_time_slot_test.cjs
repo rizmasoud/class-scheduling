@@ -1,4 +1,7 @@
-import { describe, it, expect } from 'vitest';
+const fs = require('fs');
+
+const path = 'src/domain/services/scheduling-engine/pipeline/__tests__/time-slot-generator.test.ts';
+const code = `import { describe, it, expect } from 'vitest';
 import { TimeSlotGenerator } from '../time-slot-generator';
 import { SchedulingContext } from '../../models/scheduling-context';
 import { SchedulingEngineConfig } from '../../config/scheduling-engine.config';
@@ -193,3 +196,7 @@ describe('TimeSlotGenerator', () => {
     expect(slots).toHaveLength(4);
   });
 });
+`;
+
+fs.writeFileSync(path, code);
+console.log('rewritten time slot test');

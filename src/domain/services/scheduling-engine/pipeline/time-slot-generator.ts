@@ -24,9 +24,7 @@ export class TimeSlotGenerator {
           endTime: endTimeStr,
         };
 
-        if (!this.isSlotOccupied(slot, context)) {
-          timeSlots.push(slot);
-        }
+        timeSlots.push(slot);
 
         currentStartTime = currentEndTime;
       }
