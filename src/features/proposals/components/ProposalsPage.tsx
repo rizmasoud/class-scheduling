@@ -32,7 +32,7 @@ export function ProposalsPage() {
             leftSection={<Plus size={16} />} 
             onClick={() => setCreateOpened(true)}
           >
-            Create Proposal
+            Generate Proposal
           </Button>
         </Group>
       </Group>

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getContainer } from '@/app/container';
-import { CreateProposalDTO } from '@/application/use-cases/proposals/create-proposal.use-case';
+import { GenerateProposalDTO } from '@/application/use-cases/proposals/generate-proposal.use-case';
 import { ProposalId } from '@/domain/models';
 
 export const PROPOSALS_QUERY_KEY = ['proposals', 'active'];
@@ -12,10 +12,10 @@ export const useActiveProposals = () => {
   });
 };
 
-export const useCreateProposal = () => {
+export const useGenerateProposal = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (dto: CreateProposalDTO) => getContainer().createProposalUseCase.execute(dto),
+    mutationFn: (dto: GenerateProposalDTO) => getContainer().generateProposalUseCase.execute(dto),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: PROPOSALS_QUERY_KEY });
     },
