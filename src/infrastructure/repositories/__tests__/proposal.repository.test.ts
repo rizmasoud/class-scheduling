@@ -104,4 +104,6 @@ describe('ProposalRepository', () => {
 
     await expect(repo.archive('prop-committed')).rejects.toThrow(/Only Draft proposals may be archived/);
   });
+
+  
 });

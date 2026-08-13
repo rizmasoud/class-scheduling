@@ -1,4 +1,4 @@
-import { eq, and, notInArray } from 'drizzle-orm';
+import { eq, and, notInArray, desc } from 'drizzle-orm';
 import { DbExecutor } from '@/core/database/types';
 import { schedulingProposals, SchedulingProposal as PersistenceSchedulingProposal, InsertSchedulingProposal } from '@/core/database/schema/scheduling-proposals.schema';
 import { proposalClasses } from '@/core/database/schema/proposal-classes.schema';
@@ -83,7 +83,8 @@ export class ProposalRepository
     const results = await this.db
       .select()
       .from(this.table)
-      .where(eq(this.table.isArchived, false));
+      .where(eq(this.table.isArchived, false))
+      .orderBy(desc(this.table.createdAt));
       
     const pClasses = await this.db.select().from(proposalClasses);
     const pSchedules = await this.db.select().from(proposalClassSchedules);

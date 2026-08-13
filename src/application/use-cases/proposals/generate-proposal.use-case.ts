@@ -49,6 +49,9 @@ export class GenerateProposalUseCase {
       generateProposalClassScheduleId: () => crypto.randomUUID()
     });
 
+    if (!proposal.classes || proposal.classes.length === 0) {
+      return proposal;
+    }
     return this.proposalRepository.save(proposal);
   }
 }
