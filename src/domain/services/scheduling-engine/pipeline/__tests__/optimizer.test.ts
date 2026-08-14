@@ -5,6 +5,9 @@ import { ClassCandidate } from '../../models/class-candidate';
 import { TimeSlot } from '../../models/time-slot';
 
 describe('Optimizer', () => {
+
+  
+
   const dummyContext: SchedulingContext = {
     activeTeachers: [],
     activeStudents: [],
@@ -53,15 +56,15 @@ describe('Optimizer', () => {
 
   it('returns empty list for empty input', () => {
     const optimizer = new Optimizer();
-    expect(optimizer.optimize([], dummyContext)).toEqual([]);
+    expect(optimizer.optimize([], dummyContext).accepted).toEqual([]);
   });
 
   it('accepts a single candidate', () => {
     const optimizer = new Optimizer();
     const evaluated: EvaluatedCandidate = { candidate: cand1, totalScore: 10, reasons: [] };
     const accepted = optimizer.optimize([evaluated], dummyContext);
-    expect(accepted).toHaveLength(1);
-    expect(accepted[0]).toBe(cand1);
+    expect(accepted.accepted).toHaveLength(1);
+    expect(accepted.accepted[0]).toBe(cand1);
   });
 
   it('accepts multiple non-conflicting candidates', () => {
@@ -73,11 +76,11 @@ describe('Optimizer', () => {
     ];
     
     const accepted = optimizer.optimize(input, dummyContext);
-    expect(accepted).toHaveLength(3);
+    expect(accepted.accepted).toHaveLength(3);
     // Ordered by acceptance order (highest score first)
-    expect(accepted[0]).toBe(cand1);
-    expect(accepted[1]).toBe(cand4);
-    expect(accepted[2]).toBe(cand5);
+    expect(accepted.accepted[0]).toBe(cand1);
+    expect(accepted.accepted[1]).toBe(cand4);
+    expect(accepted.accepted[2]).toBe(cand5);
   });
 
   it('rejects candidate with teacher conflict', () => {
@@ -88,8 +91,8 @@ describe('Optimizer', () => {
     ];
     
     const accepted = optimizer.optimize(input, dummyContext);
-    expect(accepted).toHaveLength(1);
-    expect(accepted[0]).toBe(cand1);
+    expect(accepted.accepted).toHaveLength(1);
+    expect(accepted.accepted[0]).toBe(cand1);
   });
 
   it('rejects candidate with student conflict', () => {
@@ -100,8 +103,8 @@ describe('Optimizer', () => {
     ];
     
     const accepted = optimizer.optimize(input, dummyContext);
-    expect(accepted).toHaveLength(1);
-    expect(accepted[0]).toBe(cand1);
+    expect(accepted.accepted).toHaveLength(1);
+    expect(accepted.accepted[0]).toBe(cand1);
   });
 
   it('highest score wins in conflict', () => {
@@ -112,8 +115,8 @@ describe('Optimizer', () => {
     ];
     
     const accepted = optimizer.optimize(input, dummyContext);
-    expect(accepted).toHaveLength(1);
-    expect(accepted[0]).toBe(cand2);
+    expect(accepted.accepted).toHaveLength(1);
+    expect(accepted.accepted[0]).toBe(cand2);
   });
 
   it('deterministic ordering for same scores', () => {
@@ -126,9 +129,9 @@ describe('Optimizer', () => {
     
     // JS sort is stable since ES2019. It should preserve the order of cand4 then cand1.
     const accepted = optimizer.optimize(input, dummyContext);
-    expect(accepted).toHaveLength(2);
-    expect(accepted[0]).toBe(cand4);
-    expect(accepted[1]).toBe(cand1);
+    expect(accepted.accepted).toHaveLength(2);
+    expect(accepted.accepted[0]).toBe(cand4);
+    expect(accepted.accepted[1]).toBe(cand1);
   });
 
   it('rejects candidate if teacher exceeds maxWeeklySessions (max = 1)', () => {
@@ -146,8 +149,8 @@ describe('Optimizer', () => {
     ];
     
     const accepted = optimizer.optimize(input, context);
-    expect(accepted).toHaveLength(1);
-    expect(accepted[0]).toBe(cand1); // Only first one is accepted
+    expect(accepted.accepted).toHaveLength(1);
+    expect(accepted.accepted[0]).toBe(cand1); // Only first one is accepted
   });
 
   it('accepts both candidates if maxWeeklySessions is 2', () => {
@@ -165,9 +168,9 @@ describe('Optimizer', () => {
     ];
     
     const accepted = optimizer.optimize(input, context);
-    expect(accepted).toHaveLength(2);
-    expect(accepted).toContain(cand1);
-    expect(accepted).toContain(cand5);
+    expect(accepted.accepted).toHaveLength(2);
+    expect(accepted.accepted).toContain(cand1);
+    expect(accepted.accepted).toContain(cand5);
   });
   
   it('rejects candidate if teacher already reached maxWeeklySessions with active classes', () => {
@@ -188,7 +191,7 @@ describe('Optimizer', () => {
     ];
     
     const accepted = optimizer.optimize(input, context);
-    expect(accepted).toHaveLength(0);
+    expect(accepted.accepted).toHaveLength(0);
   });
 
   it('does not assign Teacher A to both overlapping classes (double-booking protection)', () => {
@@ -202,8 +205,8 @@ describe('Optimizer', () => {
     ];
     
     const accepted = optimizer.optimize(input, dummyContext);
-    expect(accepted).toHaveLength(1);
-    expect(accepted[0]).toBe(candOverlap1); // Only the first is accepted due to overlap
+    expect(accepted.accepted).toHaveLength(1);
+    expect(accepted.accepted[0]).toBe(candOverlap1); // Only the first is accepted due to overlap
   });
 
   it('allows two classes with different teachers and different students to occupy the same time slot (parallel classes)', () => {
@@ -217,8 +220,31 @@ describe('Optimizer', () => {
     ];
     
     const accepted = optimizer.optimize(input, dummyContext);
-    expect(accepted).toHaveLength(2);
-    expect(accepted).toContain(sameTimeCand1);
-    expect(accepted).toContain(sameTimeCand2);
+    expect(accepted.accepted).toHaveLength(2);
+    expect(accepted.accepted).toContain(sameTimeCand1);
+    expect(accepted.accepted).toContain(sameTimeCand2);
+  });
+
+  it('records TEACHER_CAPACITY_REACHED when a teacher hits maxWeeklySessions', () => {
+    const optimizer = new Optimizer();
+    const localTeacher = { id: 't1', fullName: 'T1', notes: null, preference: { id: 'p1', teacherId: 't1', maxWeeklySessions: 0, notes: null, unavailableDayPattern: null, unavailableTimeRanges: null } };
+    const localContext = { ...dummyContext, activeTeachers: [localTeacher] };
+    const evalCand = { candidate: cand1, totalScore: 100, reasons: [] };
+    const { accepted, rejectionReasons } = optimizer.optimize([evalCand], localContext);
+    expect(accepted).toHaveLength(0);
+    expect(rejectionReasons.get('st1')?.has('TEACHER_CAPACITY_REACHED')).toBe(true);
+  });
+
+  it('records OPTIMIZER_CONFLICT when candidates conflict', () => {
+    const optimizer = new Optimizer();
+    // cand1 and cand2 conflict on teacher t1
+    const evalCand1 = { candidate: cand1, totalScore: 100, reasons: [] };
+    const evalCand2 = { candidate: cand2, totalScore: 50, reasons: [] };
+    const { accepted, rejectionReasons } = optimizer.optimize([evalCand1, evalCand2], dummyContext);
+    // cand1 has higher score, so cand1 is accepted, cand2 is rejected
+    expect(accepted).toHaveLength(1);
+    expect(accepted[0].bookId).toBe('b1');
+    // cand2 contains student 'st3', so st3 should have OPTIMIZER_CONFLICT
+    expect(rejectionReasons.get('st3')?.has('OPTIMIZER_CONFLICT')).toBe(true);
   });
 });

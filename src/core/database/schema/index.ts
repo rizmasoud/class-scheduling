@@ -14,3 +14,4 @@ export * from './exam-results.schema';
 export * from './scheduling-proposals.schema';
 export * from './proposal-classes.schema';
 export * from './proposal-class-schedules.schema';
+export * from './proposal-unscheduled-students.schema';

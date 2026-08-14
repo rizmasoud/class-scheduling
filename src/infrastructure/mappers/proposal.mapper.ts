@@ -2,6 +2,7 @@ import {
   SchedulingProposal as DomainSchedulingProposal,
   ProposalClass as DomainProposalClass,
   ProposalClassSchedule as DomainProposalClassSchedule,
+  ProposalUnscheduledStudent as DomainProposalUnscheduledStudent,
   ProposalId,
   ProposalClassId,
   ProposalClassScheduleId,
@@ -20,6 +21,9 @@ import {
 import { 
   ProposalClassSchedule as PersistenceProposalClassSchedule, InsertProposalClassSchedule 
 } from '@/core/database/schema/proposal-class-schedules.schema';
+import {
+  ProposalUnscheduledStudent as PersistenceProposalUnscheduledStudent, InsertProposalUnscheduledStudent
+} from '@/core/database/schema/proposal-unscheduled-students.schema';
 import { 
   SchedulingProposalStatus as PersistenceSchedulingProposalStatus,
   ProposalClassStatus as PersistenceProposalClassStatus,
@@ -27,7 +31,11 @@ import {
 } from '@/core/database/schema/enums';
 
 export const ProposalMapper = {
-  toDomain(raw: PersistenceSchedulingProposal, classes?: (PersistenceProposalClass & { schedules?: PersistenceProposalClassSchedule[] })[]): DomainSchedulingProposal {
+  toDomain(
+    raw: PersistenceSchedulingProposal, 
+    classes?: (PersistenceProposalClass & { schedules?: PersistenceProposalClassSchedule[] })[],
+    unscheduledStudents?: PersistenceProposalUnscheduledStudent[]
+  ): DomainSchedulingProposal {
     const clss = classes ? classes.map(c => {
       const pClass = ProposalMapper.toDomainProposalClass(c);
       return {
@@ -35,12 +43,16 @@ export const ProposalMapper = {
         schedules: c.schedules ? c.schedules.map(ProposalMapper.toDomainProposalClassSchedule) : undefined,
       };
     }) : undefined;
+    
+    const unsch = unscheduledStudents ? unscheduledStudents.map(ProposalMapper.toDomainProposalUnscheduledStudent) : undefined;
+
     return {
       id: raw.id as ProposalId,
       generatedAt: raw.generatedAt,
       status: raw.status as DomainSchedulingProposalStatus,
       notes: raw.notes,
       classes: clss,
+      unscheduledStudents: unsch,
     };
   },
   
@@ -104,6 +116,21 @@ export const ProposalMapper = {
       weekDay: domain.weekDay as PersistenceWeekDay,
       startTime: domain.startTime,
       endTime: domain.endTime,
+    };
+  },
+
+  toDomainProposalUnscheduledStudent(raw: PersistenceProposalUnscheduledStudent): DomainProposalUnscheduledStudent {
+    return {
+      studentId: raw.studentId,
+      reasons: Array.isArray(raw.reasons) ? (raw.reasons as string[]) : [],
+    };
+  },
+
+  toPersistenceProposalUnscheduledStudent(domain: DomainProposalUnscheduledStudent, proposalId: string): InsertProposalUnscheduledStudent {
+    return {
+      proposalId,
+      studentId: domain.studentId,
+      reasons: domain.reasons as string[],
     };
   }
 };

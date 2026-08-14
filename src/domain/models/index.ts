@@ -109,12 +109,18 @@ export interface ExamResult {
   readonly notes: string | null;
 }
 
+export interface ProposalUnscheduledStudent {
+  readonly studentId: string;
+  readonly reasons: readonly string[];
+}
+
 export interface SchedulingProposal {
   readonly id: ProposalId;
   readonly generatedAt: string;
   readonly status: SchedulingProposalStatus;
   readonly notes: string | null;
   readonly classes?: ProposalClass[];
+  readonly unscheduledStudents?: ProposalUnscheduledStudent[];
 }
 
 export interface ProposalClass {

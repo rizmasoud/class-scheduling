@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Title, Text, Stack, SimpleGrid, Loader, Center, Group, Button, Alert, Badge } from '@mantine/core';
-import { ArrowLeft, AlertCircle } from 'lucide-react';
+import { ArrowLeft, AlertCircle, AlertTriangle } from 'lucide-react';
+import { Table, Paper } from '@mantine/core';
 import { useProposal } from '../hooks/use-proposal-editing';
 import { useActiveBooks } from '@/features/books/hooks/use-books';
 import { useActiveTeachers } from '@/features/teachers/hooks/use-teachers';
@@ -11,6 +12,17 @@ import { StudentTransferDialog } from './StudentTransferDialog';
 import { TeacherAssignmentDialog } from './TeacherAssignmentDialog';
 import { ScheduleEditorDialog } from './ScheduleEditorDialog';
 import { Link, useParams } from '@tanstack/react-router';
+
+const formatReason = (reason: string) => {
+  switch (reason) {
+    case 'NO_ELIGIBLE_TEACHER': return 'No eligible teacher available';
+    case 'NO_VALID_TIME_SLOTS': return 'No valid time slots found';
+    case 'NO_MUTUAL_AVAILABILITY': return 'No overlapping availability with group';
+    case 'OPTIMIZER_CONFLICT': return 'Conflicting schedule in optimizer';
+    case 'TEACHER_CAPACITY_REACHED': return 'Teacher capacity reached';
+    default: return reason.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+  }
+};
 
 export const ProposalEditPage: React.FC = () => {
   const { proposalId } = useParams({ strict: false });
@@ -69,6 +81,14 @@ export const ProposalEditPage: React.FC = () => {
               <Badge color={isDraft ? 'blue' : proposal.status === 'Committed' ? 'green' : 'gray'}>
                 {proposal.status}
               </Badge>
+              <Badge color="green">
+                {new Set(proposalClasses.flatMap(c => c.studentIds || [])).size} Scheduled
+              </Badge>
+              {proposal.unscheduledStudents && proposal.unscheduledStudents.length > 0 && (
+                <Badge color="orange">
+                  {proposal.unscheduledStudents.length} Unscheduled
+                </Badge>
+              )}
             </Group>
             <Text c="dimmed">
               Manually resolve scheduling conflicts by transferring students, assigning teachers, or changing schedules.
@@ -86,6 +106,45 @@ export const ProposalEditPage: React.FC = () => {
             </Button>
           </Group>
         </Group>
+
+
+        {proposal.unscheduledStudents && proposal.unscheduledStudents.length > 0 && (
+          <Paper withBorder p="md" radius="md">
+            <Group justify="space-between" mb="md">
+              <Group>
+                <AlertTriangle size={20} color="orange" />
+                <Title order={4}>Unscheduled Students</Title>
+              </Group>
+
+            </Group>
+            <Table>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Student</Table.Th>
+                  <Table.Th>Book</Table.Th>
+                  <Table.Th>Reasons</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                {proposal.unscheduledStudents.map((us) => {
+                  const student = students?.find(s => s.id === us.studentId);
+                  const book = books?.find(b => b.id === student?.currentBookId);
+                  return (
+                    <Table.Tr key={us.studentId}>
+                      <Table.Td>{student?.fullName || us.studentId}</Table.Td>
+                      <Table.Td>{book?.name || 'Unknown'}</Table.Td>
+                      <Table.Td>
+                        <Stack gap={4}>
+                          {us.reasons.map(r => <Text key={r} size="sm" c="dimmed">{formatReason(r)}</Text>)}
+                        </Stack>
+                      </Table.Td>
+                    </Table.Tr>
+                  );
+                })}
+              </Table.Tbody>
+            </Table>
+          </Paper>
+        )}
 
         <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
           {proposalClasses.map((proposalClass) => {
