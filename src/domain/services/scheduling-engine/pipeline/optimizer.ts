@@ -70,7 +70,7 @@ export class Optimizer {
 
   private slotsOverlap(slot1: TimeSlot, slot2: TimeSlot): boolean {
     if (slot1.weekDay !== slot2.weekDay) {
-      return false;
+      return null;
     }
 
     const s1 = this.parseTime(slot1.startTime);

@@ -22,60 +22,81 @@ export class CandidateGenerator {
       }
     };
 
-    const studentHasCandidate = new Set<string>();
+    const studentsByBookAndAvailability = this.groupStudentsByBookAndAvailability(context.activeStudents, context.activeBooks);
 
     for (const book of context.activeBooks) {
       const eligibleTeachers = this.findEligibleTeachers(book, context.activeTeachers);
-      const bookStudents = context.activeStudents.filter(s => s.currentBookId === book.id);
-      
-      if (bookStudents.length === 0) continue;
 
-      if (eligibleTeachers.length === 0) {
-        recordReason(bookStudents.map(s => s.id), 'NO_ELIGIBLE_TEACHER');
-        continue;
-      }
+      const patterns = ['Odd', 'Even', 'Both'];
+      for (const pattern of patterns) {
+        const studentIds = studentsByBookAndAvailability.get(book.id + '-' + pattern) || [];
+        
+        if (studentIds.length === 0) {
+          continue;
+        }
 
-      for (const teacher of eligibleTeachers) {
-        for (const slot of timeSlots) {
-          if (!this.isTeacherAvailable(teacher, slot)) continue;
+        const studentChunks: string[][] = [];
+        for (let i = 0; i < studentIds.length; i += config.maximumCapacity) {
+          studentChunks.push(studentIds.slice(i, i + config.maximumCapacity));
+        }
 
-          const availableStudents = bookStudents.filter(s => 
-            this.areStudentsAvailable([s.id], slot, context.activeStudents) &&
-            !this.slotConflictsWithExistingClasses([s.id], teacher, slot, context)
-          );
-
-          if (availableStudents.length === 0) continue;
-
-          // Generate candidates for chunks
-          for (let i = 0; i < availableStudents.length; i += config.maximumCapacity) {
-            const chunk = availableStudents.slice(i, i + config.maximumCapacity);
-            const chunkIds = chunk.map(s => s.id);
-            
-            candidates.push(this.generateCandidate(book, teacher, chunkIds, slot));
-            chunkIds.forEach(id => studentHasCandidate.add(id));
-
-            // Generate single-student fallback candidates
-            if (chunk.length > 1) {
-              for (const s of chunk) {
-                candidates.push(this.generateCandidate(book, teacher, [s.id], slot));
-              }
-            }
+        for (const chunk of studentChunks) {
+          if (eligibleTeachers.length === 0) {
+            recordReason(chunk, 'NO_ELIGIBLE_TEACHER');
+            continue;
           }
+          
+          let generatedCount = 0;
+        for (const teacher of eligibleTeachers) {
+          for (const slot of timeSlots) {
+            if (!this.isTeacherAvailable(teacher, slot)) {
+              continue;
+            }
+
+            if (!this.areStudentsAvailable(chunk, slot, context.activeStudents)) {
+              continue;
+            }
+
+            if (this.slotConflictsWithExistingClasses(chunk, teacher, slot, context)) {
+              continue;
+            }
+
+            candidates.push(this.generateCandidate(book, teacher, chunk, slot));
+            generatedCount++;
+          }
+        }
+        if (generatedCount === 0) {
+          recordReason(chunk, 'NO_MUTUAL_AVAILABILITY');
         }
       }
     }
-
-    for (const student of context.activeStudents) {
-      if (!studentHasCandidate.has(student.id) && !rejectionReasons.has(student.id)) {
-        recordReason([student.id], 'NO_MUTUAL_AVAILABILITY');
-      }
     }
 
     return { candidates, rejectionReasons };
   }
 
+  private groupStudentsByBookAndAvailability(students: readonly Student[], books: readonly Book[]): Map<string, string[]> {
+    const map = new Map<string, string[]>();
+    for (const book of books) {
+      map.set(book.id + '-Odd', []);
+      map.set(book.id + '-Even', []);
+      map.set(book.id + '-Both', []);
+    }
+    for (const student of students) {
+      const pattern = student.preference?.availableDayPattern || 'Both';
+      const key = student.currentBookId + '-' + pattern;
+      const list = map.get(key);
+      if (list) {
+        list.push(student.id);
+      } else {
+        map.set(key, [student.id]);
+      }
+    }
+    return map;
+  }
+
   private findEligibleTeachers(book: Book, teachers: readonly Teacher[]): Teacher[] {
-    return teachers.filter(teacher =>
+    return teachers.filter(teacher => 
       teacher.skills?.some(skill => skill.bookId === book.id)
     );
   }

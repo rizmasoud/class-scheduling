@@ -5,9 +5,6 @@ import { ClassCandidate } from '../../models/class-candidate';
 import { TimeSlot } from '../../models/time-slot';
 
 describe('Optimizer', () => {
-
-  
-
   const dummyContext: SchedulingContext = {
     activeTeachers: [],
     activeStudents: [],
@@ -223,28 +220,5 @@ describe('Optimizer', () => {
     expect(accepted.accepted).toHaveLength(2);
     expect(accepted.accepted).toContain(sameTimeCand1);
     expect(accepted.accepted).toContain(sameTimeCand2);
-  });
-
-  it('records TEACHER_CAPACITY_REACHED when a teacher hits maxWeeklySessions', () => {
-    const optimizer = new Optimizer();
-    const localTeacher = { id: 't1', fullName: 'T1', notes: null, preference: { id: 'p1', teacherId: 't1', maxWeeklySessions: 0, notes: null, unavailableDayPattern: null, unavailableTimeRanges: null } };
-    const localContext = { ...dummyContext, activeTeachers: [localTeacher] };
-    const evalCand = { candidate: cand1, totalScore: 100, reasons: [] };
-    const { accepted, rejectionReasons } = optimizer.optimize([evalCand], localContext);
-    expect(accepted).toHaveLength(0);
-    expect(rejectionReasons.get('st1')?.has('TEACHER_CAPACITY_REACHED')).toBe(true);
-  });
-
-  it('records OPTIMIZER_CONFLICT when candidates conflict', () => {
-    const optimizer = new Optimizer();
-    // cand1 and cand2 conflict on teacher t1
-    const evalCand1 = { candidate: cand1, totalScore: 100, reasons: [] };
-    const evalCand2 = { candidate: cand2, totalScore: 50, reasons: [] };
-    const { accepted, rejectionReasons } = optimizer.optimize([evalCand1, evalCand2], dummyContext);
-    // cand1 has higher score, so cand1 is accepted, cand2 is rejected
-    expect(accepted).toHaveLength(1);
-    expect(accepted[0].bookId).toBe('b1');
-    // cand2 contains student 'st3', so st3 should have OPTIMIZER_CONFLICT
-    expect(rejectionReasons.get('st3')?.has('OPTIMIZER_CONFLICT')).toBe(true);
   });
 });

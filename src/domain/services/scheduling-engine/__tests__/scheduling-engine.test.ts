@@ -110,7 +110,6 @@ describe('SchedulingEngine', () => {
         reasons: ['Good']
       }],
       context: expectedContext,
-      unscheduledStudents: [],
       generateProposalClassId,
       generateProposalClassScheduleId
     });

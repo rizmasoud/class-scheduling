@@ -6,3 +6,5 @@ CREATE TABLE `proposal_unscheduled_students` (
 	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+--> statement-breakpoint
+ALTER TABLE `proposal_classes` ADD `student_ids` text DEFAULT '[]' NOT NULL;
