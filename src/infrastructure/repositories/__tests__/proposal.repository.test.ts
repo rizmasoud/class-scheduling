@@ -17,6 +17,7 @@ describe('ProposalRepository', () => {
     generatedAt: '2023-05-05T00:00:00Z',
     status: 'Draft',
     notes: 'A test proposal',
+    unscheduledStudents: [],
     classes: [
       {
         id: 'pclass-1',

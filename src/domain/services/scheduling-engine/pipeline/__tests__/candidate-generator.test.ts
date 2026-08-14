@@ -6,6 +6,9 @@ import { SchedulingEngineConfig } from '../../config/scheduling-engine.config';
 import { Book, Teacher, Student, Class } from '@/domain/models';
 
 describe('CandidateGenerator', () => {
+
+  
+
   const config: SchedulingEngineConfig = {
     minimumCapacity: 5,
     preferredCapacity: 10,
@@ -44,7 +47,7 @@ describe('CandidateGenerator', () => {
       activeClasses: []
     };
 
-    const candidates = generator.generate(context, [slot1], config);
+    const { candidates } = generator.generate(context, [slot1], config);
     expect(candidates).toHaveLength(1);
     expect(candidates[0].bookId).toBe('b1');
     expect(candidates[0].teacherId).toBe('t1');
@@ -61,7 +64,7 @@ describe('CandidateGenerator', () => {
       activeClasses: []
     };
 
-    const candidates = generator.generate(context, [slot1], config);
+    const { candidates } = generator.generate(context, [slot1], config);
     expect(candidates).toHaveLength(0);
   });
 
@@ -78,7 +81,7 @@ describe('CandidateGenerator', () => {
       activeClasses: []
     };
 
-    const candidates = generator.generate(context, [slot1], config);
+    const { candidates } = generator.generate(context, [slot1], config);
     // Should split 31 students into 15, 15, and 1
     expect(candidates).toHaveLength(3);
     
@@ -110,7 +113,7 @@ describe('CandidateGenerator', () => {
       activeClasses: []
     };
 
-    const candidates = generator.generate(context, [slot1], config);
+    const { candidates } = generator.generate(context, [slot1], config);
     expect(candidates).toHaveLength(0);
   });
 
@@ -121,7 +124,7 @@ describe('CandidateGenerator', () => {
       preference: {
         id: 'pref1',
         teacherId: 't1',
-        unavailableDayPattern: 'Odd', // Monday is odd
+        unavailableDayPattern: 'Odd' as any, // Monday is odd
         unavailableTimeRanges: null,
         maxWeeklySessions: null,
         notes: null
@@ -135,7 +138,7 @@ describe('CandidateGenerator', () => {
       activeClasses: []
     };
 
-    const candidates = generator.generate(context, [slot1], config);
+    const { candidates } = generator.generate(context, [slot1], config);
     expect(candidates).toHaveLength(0);
   });
 
@@ -160,7 +163,7 @@ describe('CandidateGenerator', () => {
       activeClasses: []
     };
 
-    const candidates = generator.generate(context, [slot1], config);
+    const { candidates } = generator.generate(context, [slot1], config);
     expect(candidates).toHaveLength(0);
   });
 
@@ -189,7 +192,7 @@ describe('CandidateGenerator', () => {
       activeClasses: [activeClass]
     };
 
-    const candidates = generator.generate(context, [slot1], config);
+    const { candidates } = generator.generate(context, [slot1], config);
     expect(candidates).toHaveLength(0);
   });
 
@@ -211,7 +214,7 @@ describe('CandidateGenerator', () => {
       activeStudents: [availableStudent],
       activeClasses: []
     };
-    const candidates = generator.generate(context, [slot1], config);
+    const { candidates } = generator.generate(context, [slot1], config);
     expect(candidates).toHaveLength(1);
   });
 
@@ -233,7 +236,7 @@ describe('CandidateGenerator', () => {
       activeStudents: [unavailableStudent],
       activeClasses: []
     };
-    const candidates = generator.generate(context, [slot1], config);
+    const { candidates } = generator.generate(context, [slot1], config);
     expect(candidates).toHaveLength(0);
   });
 
@@ -255,7 +258,7 @@ describe('CandidateGenerator', () => {
       activeStudents: [unavailableStudent],
       activeClasses: []
     };
-    const candidates = generator.generate(context, [slot1], config);
+    const { candidates } = generator.generate(context, [slot1], config);
     expect(candidates).toHaveLength(0);
   });
 
@@ -286,7 +289,25 @@ describe('CandidateGenerator', () => {
       activeClasses: [activeClass]
     };
 
-    const candidates = generator.generate(context, [slot1], config);
+    const { candidates } = generator.generate(context, [slot1], config);
     expect(candidates).toHaveLength(0);
   });
+
+  it('records NO_ELIGIBLE_TEACHER if no teachers have the required skill', () => {
+    const generator = new CandidateGenerator();
+    const localContext = { activeBooks: [book1], activeTeachers: [], activeStudents: [student1], activeClasses: [] };
+    const { candidates, rejectionReasons } = generator.generate(localContext, [slot1], config);
+    expect(candidates).toHaveLength(0);
+    expect(rejectionReasons.get('st1')?.has('NO_ELIGIBLE_TEACHER')).toBe(true);
+  });
+
+  it('records NO_MUTUAL_AVAILABILITY if teachers exist but no mutual slot is found', () => {
+    const generator = new CandidateGenerator();
+    const localTeacher = { ...teacher1, preference: { id: 'p', teacherId: teacher1.id, maxWeeklySessions: null, unavailableTimeRanges: null, notes: null, unavailableDayPattern: 'Odd' as any } };
+    const localContext = { activeBooks: [book1], activeTeachers: [localTeacher], activeStudents: [student1], activeClasses: [] };
+    const { candidates, rejectionReasons } = generator.generate(localContext, [slot1], config);
+    expect(candidates).toHaveLength(0);
+    expect(rejectionReasons.get('st1')?.has('NO_MUTUAL_AVAILABILITY')).toBe(true);
+  });
+
 });

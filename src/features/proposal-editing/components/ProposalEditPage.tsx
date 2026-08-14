@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Title, Text, Stack, SimpleGrid, Loader, Center, Group, Button, Alert, Badge } from '@mantine/core';
-import { ArrowLeft, AlertCircle } from 'lucide-react';
+import { ArrowLeft, AlertCircle, AlertTriangle } from 'lucide-react';
+import { Table, Paper } from '@mantine/core';
 import { useProposal } from '../hooks/use-proposal-editing';
 import { useActiveBooks } from '@/features/books/hooks/use-books';
 import { useActiveTeachers } from '@/features/teachers/hooks/use-teachers';
@@ -86,6 +87,52 @@ export const ProposalEditPage: React.FC = () => {
             </Button>
           </Group>
         </Group>
+
+
+        {proposal.unscheduledStudents && proposal.unscheduledStudents.length > 0 && (
+          <Paper withBorder p="md" radius="md">
+            <Group justify="space-between" mb="md">
+              <Group>
+                <AlertTriangle size={20} color="orange" />
+                <Title order={4}>Unscheduled Students</Title>
+              </Group>
+              <Group>
+                <Badge color="green">
+                  {new Set(proposalClasses.flatMap(c => c.studentIds || [])).size} Scheduled
+                </Badge>
+                <Badge color="orange">
+                  {proposal.unscheduledStudents.length} Unscheduled
+                </Badge>
+              </Group>
+            </Group>
+            <Table>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Student</Table.Th>
+                  <Table.Th>Book</Table.Th>
+                  <Table.Th>Reasons</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                {proposal.unscheduledStudents.map((us) => {
+                  const student = students?.find(s => s.id === us.studentId);
+                  const book = books?.find(b => b.id === student?.currentBookId);
+                  return (
+                    <Table.Tr key={us.studentId}>
+                      <Table.Td>{student?.fullName || us.studentId}</Table.Td>
+                      <Table.Td>{book?.name || 'Unknown'}</Table.Td>
+                      <Table.Td>
+                        <Stack gap={4}>
+                          {us.reasons.map(r => <Text key={r} size="sm" c="dimmed">{r}</Text>)}
+                        </Stack>
+                      </Table.Td>
+                    </Table.Tr>
+                  );
+                })}
+              </Table.Tbody>
+            </Table>
+          </Paper>
+        )}
 
         <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
           {proposalClasses.map((proposalClass) => {

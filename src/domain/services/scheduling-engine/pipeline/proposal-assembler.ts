@@ -1,6 +1,6 @@
 import { ClassCandidate } from '../models/class-candidate';
 import { SchedulingContext } from '../models/scheduling-context';
-import { SchedulingProposal, ProposalClass, ProposalClassSchedule, WeekDay } from '@/domain/models';
+import { SchedulingProposal, ProposalClass, ProposalClassSchedule, WeekDay, ProposalUnscheduledStudent } from '@/domain/models';
 
 export interface AssemblerCandidate {
   readonly candidate: ClassCandidate;
@@ -13,6 +13,7 @@ export interface ProposalAssemblerInput {
   generatedAt: string;
   candidates: readonly AssemblerCandidate[];
   context: SchedulingContext;
+  unscheduledStudents: readonly ProposalUnscheduledStudent[];
   generateProposalClassId: () => string;
   generateProposalClassScheduleId: () => string;
 }
@@ -69,7 +70,8 @@ export class ProposalAssembler {
       generatedAt: input.generatedAt,
       status: 'Draft',
       notes: null,
-      classes
+      classes,
+      unscheduledStudents: input.unscheduledStudents ? [...input.unscheduledStudents] : []
     };
   }
 }
