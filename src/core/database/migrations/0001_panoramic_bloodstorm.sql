@@ -1,4 +1,4 @@
-CREATE TABLE `proposal_unscheduled_students` (
+CREATE TABLE IF NOT EXISTS `proposal_unscheduled_students` (
 	`id` text PRIMARY KEY NOT NULL,
 	`proposal_id` text NOT NULL,
 	`student_id` text NOT NULL,
