@@ -8,13 +8,6 @@
       "when": 1784884912615,
       "tag": "0000_wild_prowler",
       "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1786582124580,
-      "tag": "0001_panoramic_bloodstorm",
-      "breakpoints": true
     }
   ]
 }

@@ -46,9 +46,9 @@ describe('SchedulingEngine', () => {
     };
 
     vi.mocked(mockTimeSlotGenerator.generate).mockReturnValue(fakeTimeSlots);
-    vi.mocked(mockCandidateGenerator.generate).mockReturnValue({ candidates: fakeCandidates, rejectionReasons: new Map() });
+    vi.mocked(mockCandidateGenerator.generate).mockReturnValue(fakeCandidates);
     vi.mocked(mockRuleEngine.evaluate).mockReturnValue(fakeEvaluation);
-    vi.mocked(mockOptimizer.optimize).mockReturnValue({ accepted: fakeOptimized, rejectionReasons: new Map() });
+    vi.mocked(mockOptimizer.optimize).mockReturnValue(fakeOptimized);
     vi.mocked(mockProposalAssembler.assemble).mockReturnValue(expectedProposal);
 
     const generateProposalClassId = vi.fn();
@@ -139,10 +139,10 @@ describe('SchedulingEngine', () => {
     };
 
     vi.mocked(mockTimeSlotGenerator.generate).mockReturnValue([]);
-    vi.mocked(mockCandidateGenerator.generate).mockReturnValue({ candidates: [fakeCandidate], rejectionReasons: new Map() });
+    vi.mocked(mockCandidateGenerator.generate).mockReturnValue([fakeCandidate]);
     // Rule engine rejects candidate
     vi.mocked(mockRuleEngine.evaluate).mockReturnValue({ valid: false, totalScore: 0, reasons: [], failedRule: 'SomeRule' });
-    vi.mocked(mockOptimizer.optimize).mockReturnValue({ accepted: [], rejectionReasons: new Map() });
+    vi.mocked(mockOptimizer.optimize).mockReturnValue([]);
     
     const expectedProposal: SchedulingProposal = {
       id: 'prop-empty',

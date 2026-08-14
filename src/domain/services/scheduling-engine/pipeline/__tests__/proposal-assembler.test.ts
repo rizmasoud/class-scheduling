@@ -27,7 +27,6 @@ describe('ProposalAssembler', () => {
       generatedAt: '2023-01-01T10:00:00Z',
       candidates: [],
       context,
-      unscheduledStudents: [],
       generateProposalClassId: () => 'pc-1',
       generateProposalClassScheduleId: () => 'ps-1'
     };
@@ -65,7 +64,6 @@ describe('ProposalAssembler', () => {
       generatedAt: '2023-01-01T10:00:00Z',
       candidates: [cand],
       context,
-      unscheduledStudents: [],
       generateProposalClassId: () => `pc-${classIdCounter++}`,
       generateProposalClassScheduleId: () => `ps-${scheduleIdCounter++}`
     };
@@ -120,7 +118,6 @@ describe('ProposalAssembler', () => {
       generatedAt: '2023-01-01T10:00:00Z',
       candidates: [cand],
       context,
-      unscheduledStudents: [],
       generateProposalClassId: () => 'pc-1',
       generateProposalClassScheduleId: () => 'ps-1'
     };
@@ -153,7 +150,6 @@ describe('ProposalAssembler', () => {
       generatedAt: '2023-01-01T10:00:00Z',
       candidates: [cand1, cand2],
       context,
-      unscheduledStudents: [],
       generateProposalClassId: () => `pc-${classIdCounter++}`,
       generateProposalClassScheduleId: () => `ps-${scheduleIdCounter++}`
     };

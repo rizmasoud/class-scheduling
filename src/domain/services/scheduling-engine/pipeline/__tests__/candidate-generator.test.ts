@@ -45,7 +45,7 @@ describe('CandidateGenerator', () => {
     };
 
     const candidates = generator.generate(context, [slot1], config);
-    expect(candidates.candidates || candidates).toHaveLength(1);
+    expect(candidates).toHaveLength(1);
     expect(candidates[0].bookId).toBe('b1');
     expect(candidates[0].teacherId).toBe('t1');
     expect(candidates[0].studentIds).toEqual(['st1']);
@@ -62,7 +62,7 @@ describe('CandidateGenerator', () => {
     };
 
     const candidates = generator.generate(context, [slot1], config);
-    expect(candidates.candidates || candidates).toHaveLength(0);
+    expect(candidates).toHaveLength(0);
   });
 
   it('splits group if size exceeds maximum capacity', () => {
@@ -80,7 +80,7 @@ describe('CandidateGenerator', () => {
 
     const candidates = generator.generate(context, [slot1], config);
     // Should split 31 students into 15, 15, and 1
-    expect(candidates.candidates || candidates).toHaveLength(3);
+    expect(candidates).toHaveLength(3);
     
     // Check sizes of the studentIds arrays in generated candidates
     const groupSizes = candidates.map(c => c.studentIds.length);
@@ -111,7 +111,7 @@ describe('CandidateGenerator', () => {
     };
 
     const candidates = generator.generate(context, [slot1], config);
-    expect(candidates.candidates || candidates).toHaveLength(0);
+    expect(candidates).toHaveLength(0);
   });
 
   it('skips if teacher unavailable due to pattern', () => {
@@ -136,7 +136,7 @@ describe('CandidateGenerator', () => {
     };
 
     const candidates = generator.generate(context, [slot1], config);
-    expect(candidates.candidates || candidates).toHaveLength(0);
+    expect(candidates).toHaveLength(0);
   });
 
   it('skips if teacher unavailable due to time range', () => {
@@ -161,7 +161,7 @@ describe('CandidateGenerator', () => {
     };
 
     const candidates = generator.generate(context, [slot1], config);
-    expect(candidates.candidates || candidates).toHaveLength(0);
+    expect(candidates).toHaveLength(0);
   });
 
   it('skips if slot conflicts with immutable existing class for teacher', () => {
@@ -190,7 +190,7 @@ describe('CandidateGenerator', () => {
     };
 
     const candidates = generator.generate(context, [slot1], config);
-    expect(candidates.candidates || candidates).toHaveLength(0);
+    expect(candidates).toHaveLength(0);
   });
 
   it('allows candidate if student available according to preference', () => {
@@ -212,7 +212,7 @@ describe('CandidateGenerator', () => {
       activeClasses: []
     };
     const candidates = generator.generate(context, [slot1], config);
-    expect(candidates.candidates || candidates).toHaveLength(1);
+    expect(candidates).toHaveLength(1);
   });
 
   it('skips if student unavailable on that day', () => {
@@ -234,7 +234,7 @@ describe('CandidateGenerator', () => {
       activeClasses: []
     };
     const candidates = generator.generate(context, [slot1], config);
-    expect(candidates.candidates || candidates).toHaveLength(0);
+    expect(candidates).toHaveLength(0);
   });
 
   it('skips if student unavailable during that time', () => {
@@ -256,7 +256,7 @@ describe('CandidateGenerator', () => {
       activeClasses: []
     };
     const candidates = generator.generate(context, [slot1], config);
-    expect(candidates.candidates || candidates).toHaveLength(0);
+    expect(candidates).toHaveLength(0);
   });
 
   it('skips if slot conflicts with existing class for student', () => {
@@ -287,6 +287,6 @@ describe('CandidateGenerator', () => {
     };
 
     const candidates = generator.generate(context, [slot1], config);
-    expect(candidates.candidates || candidates).toHaveLength(0);
+    expect(candidates).toHaveLength(0);
   });
 });

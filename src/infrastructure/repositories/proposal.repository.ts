@@ -3,7 +3,6 @@ import { DbExecutor } from '@/core/database/types';
 import { schedulingProposals, SchedulingProposal as PersistenceSchedulingProposal, InsertSchedulingProposal } from '@/core/database/schema/scheduling-proposals.schema';
 import { proposalClasses } from '@/core/database/schema/proposal-classes.schema';
 import { proposalClassSchedules } from '@/core/database/schema/proposal-class-schedules.schema';
-import { proposalUnscheduledStudents } from '@/core/database/schema/proposal-unscheduled-students.schema';
 import { SchedulingProposal, ProposalId } from '@/domain/models';
 import { IProposalRepository } from '@/domain/repositories/i-proposal.repository';
 import { ProposalMapper } from '@/infrastructure/mappers/proposal.mapper';
@@ -46,8 +45,7 @@ export class ProposalRepository
       schedules: pSchedules.filter(s => s.proposalClassId === c.id)
     }));
 
-    const pUnscheduled = await this.db.select().from(proposalUnscheduledStudents).where(eq(proposalUnscheduledStudents.proposalId, id as string));
-    return ProposalMapper.toDomain(raw, classesWithSchedules, pUnscheduled);
+    return ProposalMapper.toDomain(raw, classesWithSchedules);
   }
 
   async findMany(ids: readonly ProposalId[]): Promise<readonly SchedulingProposal[]> {
@@ -56,14 +54,13 @@ export class ProposalRepository
     
     const pClasses = await this.db.select().from(proposalClasses);
     const pSchedules = await this.db.select().from(proposalClassSchedules);
-    const pUnscheduled = await this.db.select().from(proposalUnscheduledStudents);
     
     return raw.map(prop => {
       const propClasses = pClasses.filter(c => c.proposalId === prop.id).map(c => ({
         ...c,
         schedules: pSchedules.filter(s => s.proposalClassId === c.id)
       }));
-      return ProposalMapper.toDomain(prop, propClasses, pUnscheduled.filter(u => u.proposalId === prop.id));
+      return ProposalMapper.toDomain(prop, propClasses);
     });
   }
 
@@ -72,14 +69,13 @@ export class ProposalRepository
     
     const pClasses = await this.db.select().from(proposalClasses);
     const pSchedules = await this.db.select().from(proposalClassSchedules);
-    const pUnscheduled = await this.db.select().from(proposalUnscheduledStudents);
     
     return raw.map(prop => {
       const propClasses = pClasses.filter(c => c.proposalId === prop.id).map(c => ({
         ...c,
         schedules: pSchedules.filter(s => s.proposalClassId === c.id)
       }));
-      return ProposalMapper.toDomain(prop, propClasses, pUnscheduled.filter(u => u.proposalId === prop.id));
+      return ProposalMapper.toDomain(prop, propClasses);
     });
   }
 
@@ -92,14 +88,13 @@ export class ProposalRepository
       
     const pClasses = await this.db.select().from(proposalClasses);
     const pSchedules = await this.db.select().from(proposalClassSchedules);
-    const pUnscheduled = await this.db.select().from(proposalUnscheduledStudents);
     
     return results.map(prop => {
       const propClasses = pClasses.filter(c => c.proposalId === prop.id).map(c => ({
         ...c,
         schedules: pSchedules.filter(s => s.proposalClassId === c.id)
       }));
-      return ProposalMapper.toDomain(prop, propClasses, pUnscheduled.filter(u => u.proposalId === prop.id));
+      return ProposalMapper.toDomain(prop, propClasses);
     });
   }
 
@@ -214,22 +209,11 @@ export class ProposalRepository
           pSchedules.push(...scheds);
         }
       }
-      // 3. Save unscheduled students if provided
-      if (proposal.unscheduledStudents) {
-        await tx.delete(proposalUnscheduledStudents).where(eq(proposalUnscheduledStudents.proposalId, proposal.id as string));
-        for (const unsch of proposal.unscheduledStudents) {
-          await tx.insert(proposalUnscheduledStudents).values(ProposalMapper.toPersistenceProposalUnscheduledStudent(unsch, proposal.id as string));
-        }
-      } else {
-        await tx.delete(proposalUnscheduledStudents).where(eq(proposalUnscheduledStudents.proposalId, proposal.id as string));
-      }
-
       const classesWithSchedules = pClasses.map(c => ({
         ...c,
         schedules: pSchedules.filter(s => s.proposalClassId === c.id)
       }));
-      const pUnscheduled = await tx.select().from(proposalUnscheduledStudents).where(eq(proposalUnscheduledStudents.proposalId, proposal.id as string));
-      return ProposalMapper.toDomain(result, classesWithSchedules, pUnscheduled);
+      return ProposalMapper.toDomain(result, classesWithSchedules);
     });
   }
 

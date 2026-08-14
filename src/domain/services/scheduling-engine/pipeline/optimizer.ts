@@ -9,33 +9,20 @@ export interface EvaluatedCandidate {
 }
 
 export class Optimizer {
-  optimize(evaluatedCandidates: readonly EvaluatedCandidate[], context: SchedulingContext): { accepted: readonly ClassCandidate[], rejectionReasons: Map<string, Set<string>> } {
+  optimize(evaluatedCandidates: readonly EvaluatedCandidate[], context: SchedulingContext): readonly ClassCandidate[] {
     const sorted = [...evaluatedCandidates].sort((a, b) => b.totalScore - a.totalScore);
     const accepted: ClassCandidate[] = [];
-    const rejectionReasons = new Map<string, Set<string>>();
-    
-    const recordReason = (studentIds: readonly string[], reason: string) => {
-      for (const id of studentIds) {
-        if (!rejectionReasons.has(id)) {
-          rejectionReasons.set(id, new Set());
-        }
-        rejectionReasons.get(id)!.add(reason);
-      }
-    };
 
     for (const evaluated of sorted) {
-      const conflictReason = this.getConflictReason(evaluated.candidate, accepted, context);
-      if (!conflictReason) {
+      if (!this.hasConflict(evaluated.candidate, accepted, context)) {
         accepted.push(evaluated.candidate);
-      } else {
-        recordReason(evaluated.candidate.studentIds, conflictReason);
       }
     }
 
-    return { accepted, rejectionReasons };
+    return accepted;
   }
 
-  private getConflictReason(candidate: ClassCandidate, accepted: readonly ClassCandidate[], context: SchedulingContext): string | null {
+  private hasConflict(candidate: ClassCandidate, accepted: readonly ClassCandidate[], context: SchedulingContext): boolean {
     const teacher = context.activeTeachers.find(t => t.id === candidate.teacherId);
     if (teacher?.preference?.maxWeeklySessions != null) {
       let currentSessions = 0;
@@ -50,27 +37,27 @@ export class Optimizer {
         }
       }
       if (currentSessions >= teacher.preference.maxWeeklySessions) {
-        return 'TEACHER_CAPACITY_REACHED';
+        return true;
       }
     }
     for (const acc of accepted) {
       const sharedStudents = candidate.studentIds.some(id => acc.studentIds.includes(id));
       if (sharedStudents) {
-        return 'OPTIMIZER_CONFLICT';
+        return true;
       }
 
       if (this.slotsOverlap(candidate.timeSlot, acc.timeSlot)) {
         if (candidate.teacherId === acc.teacherId) {
-          return 'OPTIMIZER_CONFLICT';
+          return true;
         }
       }
     }
-    return null;
+    return false;
   }
 
   private slotsOverlap(slot1: TimeSlot, slot2: TimeSlot): boolean {
     if (slot1.weekDay !== slot2.weekDay) {
-      return null;
+      return false;
     }
 
     const s1 = this.parseTime(slot1.startTime);

@@ -9,44 +9,25 @@ export class CandidateGenerator {
     context: SchedulingContext,
     timeSlots: readonly TimeSlot[],
     config: SchedulingEngineConfig
-  ): { candidates: readonly ClassCandidate[], rejectionReasons: Map<string, Set<string>> } {
+  ): readonly ClassCandidate[] {
     const candidates: ClassCandidate[] = [];
-    const rejectionReasons = new Map<string, Set<string>>();
-    
-    const recordReason = (studentIds: readonly string[], reason: string) => {
-      for (const id of studentIds) {
-        if (!rejectionReasons.has(id)) {
-          rejectionReasons.set(id, new Set());
-        }
-        rejectionReasons.get(id)!.add(reason);
-      }
-    };
-
-    const studentsByBookAndAvailability = this.groupStudentsByBookAndAvailability(context.activeStudents, context.activeBooks);
+    const studentsByBook = this.groupStudentsByBook(context.activeStudents, context.activeBooks);
 
     for (const book of context.activeBooks) {
+      const studentIds = studentsByBook.get(book.id) || [];
+      
+      if (studentIds.length === 0) {
+        continue;
+      }
+
+      const studentChunks: string[][] = [];
+      for (let i = 0; i < studentIds.length; i += config.maximumCapacity) {
+        studentChunks.push(studentIds.slice(i, i + config.maximumCapacity));
+      }
+
       const eligibleTeachers = this.findEligibleTeachers(book, context.activeTeachers);
 
-      const patterns = ['Odd', 'Even', 'Both'];
-      for (const pattern of patterns) {
-        const studentIds = studentsByBookAndAvailability.get(book.id + '-' + pattern) || [];
-        
-        if (studentIds.length === 0) {
-          continue;
-        }
-
-        const studentChunks: string[][] = [];
-        for (let i = 0; i < studentIds.length; i += config.maximumCapacity) {
-          studentChunks.push(studentIds.slice(i, i + config.maximumCapacity));
-        }
-
-        for (const chunk of studentChunks) {
-          if (eligibleTeachers.length === 0) {
-            recordReason(chunk, 'NO_ELIGIBLE_TEACHER');
-            continue;
-          }
-          
-          let generatedCount = 0;
+      for (const chunk of studentChunks) {
         for (const teacher of eligibleTeachers) {
           for (const slot of timeSlots) {
             if (!this.isTeacherAvailable(teacher, slot)) {
@@ -62,34 +43,23 @@ export class CandidateGenerator {
             }
 
             candidates.push(this.generateCandidate(book, teacher, chunk, slot));
-            generatedCount++;
           }
-        }
-        if (generatedCount === 0) {
-          recordReason(chunk, 'NO_MUTUAL_AVAILABILITY');
         }
       }
     }
-    }
 
-    return { candidates, rejectionReasons };
+    return candidates;
   }
 
-  private groupStudentsByBookAndAvailability(students: readonly Student[], books: readonly Book[]): Map<string, string[]> {
+  private groupStudentsByBook(students: readonly Student[], books: readonly Book[]): Map<string, string[]> {
     const map = new Map<string, string[]>();
     for (const book of books) {
-      map.set(book.id + '-Odd', []);
-      map.set(book.id + '-Even', []);
-      map.set(book.id + '-Both', []);
+      map.set(book.id, []);
     }
     for (const student of students) {
-      const pattern = student.preference?.availableDayPattern || 'Both';
-      const key = student.currentBookId + '-' + pattern;
-      const list = map.get(key);
+      const list = map.get(student.currentBookId);
       if (list) {
         list.push(student.id);
-      } else {
-        map.set(key, [student.id]);
       }
     }
     return map;
