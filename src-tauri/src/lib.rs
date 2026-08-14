@@ -93,7 +93,7 @@ pub fn run() {
       kind: tauri_plugin_sql::MigrationKind::Up,
     },
     tauri_plugin_sql::Migration {
-      version: 2,
+      version: 3,
       description: "add_proposal_unscheduled_students",
       sql: include_str!("../../src/core/database/migrations/0001_panoramic_bloodstorm.sql"),
       kind: tauri_plugin_sql::MigrationKind::Up,

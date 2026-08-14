@@ -1,4 +1,7 @@
-import { ClassCandidate } from '../models/class-candidate';
+const fs = require('fs');
+const file = 'src/domain/services/scheduling-engine/pipeline/candidate-generator.ts';
+
+const content = `import { ClassCandidate } from '../models/class-candidate';
 import { SchedulingContext } from '../models/scheduling-context';
 import { TimeSlot } from '../models/time-slot';
 import { SchedulingEngineConfig } from '../config/scheduling-engine.config';
@@ -191,3 +194,7 @@ export class CandidateGenerator {
     };
   }
 }
+`;
+
+fs.writeFileSync(file, content);
+console.log('Patched candidate-generator.ts');

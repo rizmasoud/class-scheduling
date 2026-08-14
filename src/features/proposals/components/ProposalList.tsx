@@ -33,6 +33,14 @@ export function ProposalList({ proposals, isLoading, onCommit, onArchive }: Prop
         </Badge>
       </Table.Td>
       <Table.Td>{proposal.classes?.length || 0}</Table.Td>
+      <Table.Td>{new Set(proposal.classes?.flatMap(c => c.studentIds || []) || []).size}</Table.Td>
+      <Table.Td>
+        {proposal.unscheduledStudents && proposal.unscheduledStudents.length > 0 ? (
+          <Badge color="orange">{proposal.unscheduledStudents.length}</Badge>
+        ) : (
+          <Badge color="gray" variant="light">0</Badge>
+        )}
+      </Table.Td>
       <Table.Td>{proposal.notes || '-'}</Table.Td>
       <Table.Td>
         <Group gap="xs">
@@ -61,6 +69,8 @@ export function ProposalList({ proposals, isLoading, onCommit, onArchive }: Prop
           <Table.Th>Generated At</Table.Th>
           <Table.Th>Status</Table.Th>
           <Table.Th>Classes</Table.Th>
+          <Table.Th>Scheduled</Table.Th>
+          <Table.Th>Unscheduled</Table.Th>
           <Table.Th>Notes</Table.Th>
           <Table.Th>Actions</Table.Th>
         </Table.Tr>
