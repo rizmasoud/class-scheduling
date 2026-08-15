@@ -13,6 +13,15 @@ fn init_drizzle_db(db_path: String, state: State<DrizzleDbState>) -> Result<(), 
     if conn_guard.is_none() {
         let conn = Connection::open(&db_path).map_err(|e| e.to_string())?;
         conn.execute_batch("PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;").map_err(|e| e.to_string())?;
+
+        let migration_0000 = include_str!("../../src/core/database/migrations/0000_wild_prowler.sql");
+        conn.execute_batch(migration_0000)
+            .map_err(|e| format!("Failed to run migration 0000_wild_prowler: {}", e))?;
+
+        let migration_0001 = include_str!("../../src/core/database/migrations/0001_panoramic_bloodstorm.sql");
+        conn.execute_batch(migration_0001)
+            .map_err(|e| format!("Failed to run migration 0001_panoramic_bloodstorm: {}", e))?;
+
         *conn_guard = Some(conn);
     }
     Ok(())
@@ -85,27 +94,7 @@ fn execute_drizzle_sql(
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-  let migrations = vec![
-    tauri_plugin_sql::Migration {
-      version: 1,
-      description: "initial_schema",
-      sql: include_str!("../../src/core/database/migrations/0000_wild_prowler.sql"),
-      kind: tauri_plugin_sql::MigrationKind::Up,
-    },
-    tauri_plugin_sql::Migration {
-      version: 3,
-      description: "add_proposal_unscheduled_students",
-      sql: include_str!("../../src/core/database/migrations/0001_panoramic_bloodstorm.sql"),
-      kind: tauri_plugin_sql::MigrationKind::Up,
-    }
-  ];
-
   tauri::Builder::default()
-    .plugin(
-      tauri_plugin_sql::Builder::default()
-        .add_migrations("sqlite:edutech.db", migrations)
-        .build()
-    )
     .manage(DrizzleDbState {
       conn: Mutex::new(None),
     })
