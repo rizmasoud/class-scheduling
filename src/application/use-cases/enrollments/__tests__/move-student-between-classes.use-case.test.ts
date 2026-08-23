@@ -49,7 +49,7 @@ describe('MoveStudentBetweenClassesUseCase', () => {
     };
 
     const mockClassRepo: IClassRepository = {
-      findById: vi.fn().mockImplementation((id) => {
+  findById: vi.fn().mockImplementation((id) => {
         if (id === 'c-old') return Promise.resolve(oldClass);
         if (id === 'c-new') return Promise.resolve(newClass);
         return Promise.resolve(null);
@@ -58,18 +58,14 @@ describe('MoveStudentBetweenClassesUseCase', () => {
       findAllActive: vi.fn(),
       findMany: vi.fn(),
       save: vi.fn().mockImplementation((c) => Promise.resolve(c)),
-      saveMany: vi.fn().mockImplementation((cs) => Promise.resolve(cs)),
-      archive: vi.fn(),
-    };
+      archive: vi.fn(), };
     
     const mockStudentRepo: IStudentRepository = {
       findById: vi.fn().mockResolvedValue(student),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      save: vi.fn(),
-                  archive: vi.fn(),
-    };
+      save: vi.fn(), archive: vi.fn(), };
 
     const useCase = new MoveStudentBetweenClassesUseCase(mockClassRepo, mockStudentRepo);
     
@@ -83,7 +79,7 @@ describe('MoveStudentBetweenClassesUseCase', () => {
     expect(mockClassRepo.findById).toHaveBeenCalledWith('c-old');
     expect(mockClassRepo.findById).toHaveBeenCalledWith('c-new');
     expect(mockStudentRepo.findById).toHaveBeenCalledWith('s-1');
-    expect(mockClassRepo.saveMany).toHaveBeenCalledTimes(1);
+    expect(mockClassRepo.save).toHaveBeenCalledTimes(2);
 
     expect(result.oldClass.enrollments![0].enrollmentStatus).toBe('Dropped');
     expect(result.oldClass.enrollments![0].leftAt).toBe('2023-01-01');

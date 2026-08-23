@@ -6,13 +6,11 @@ describe('GetTeacherByIdUseCase', () => {
   it('should return a teacher by id', async () => {
     const teacher = { id: 't-1', fullName: 'John Teacher', notes: null, preference: null, skills: [] };
     const mockRepo: ITeacherRepository = {
-      save: vi.fn(),
-      findById: vi.fn().mockResolvedValue(teacher),
+      save: vi.fn(), findById: vi.fn().mockResolvedValue(teacher),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            archive: vi.fn(),
-    };
+            archive: vi.fn(), };
 
     const useCase = new GetTeacherByIdUseCase(mockRepo);
     

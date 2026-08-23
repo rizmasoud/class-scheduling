@@ -12,8 +12,7 @@ describe('CreateProposalUseCase', () => {
       findAllActive: vi.fn(),
       findMany: vi.fn(),
       saveWithClasses: vi.fn(),
-      archive: vi.fn(),
-    };
+      archive: vi.fn(), };
 
     const useCase = new CreateProposalUseCase(mockRepo);
 
@@ -42,8 +41,7 @@ describe('CreateProposalUseCase', () => {
       findAllActive: vi.fn(),
       findMany: vi.fn(),
       saveWithClasses: vi.fn(),
-      archive: vi.fn(),
-    };
+      archive: vi.fn(), };
 
     const useCase = new CreateProposalUseCase(mockRepo);
 

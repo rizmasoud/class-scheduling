@@ -54,6 +54,7 @@ import { GetStudentByIdUseCase } from '@/application/use-cases/students/get-stud
 import { CreateStudentUseCase } from '@/application/use-cases/students/create-student.use-case';
 import { ArchiveStudentUseCase } from '@/application/use-cases/students/archive-student.use-case';
 import { PromoteStudentUseCase } from '@/application/use-cases/students/promote-student.use-case';
+import { ImportStudentsUseCase } from '@/application/use-cases/students/import-students.use-case';
 import { EnrollStudentUseCase } from '@/application/use-cases/enrollments/enroll-student.use-case';
 import { UnenrollStudentUseCase } from '@/application/use-cases/enrollments/unenroll-student.use-case';
 import { MoveStudentBetweenClassesUseCase } from '@/application/use-cases/enrollments/move-student-between-classes.use-case';
@@ -105,6 +106,7 @@ export interface AppContainer {
   getStudentByIdUseCase: GetStudentByIdUseCase;
   createStudentUseCase: CreateStudentUseCase;
   archiveStudentUseCase: ArchiveStudentUseCase;
+  importStudentsUseCase: ImportStudentsUseCase;
   enrollStudentUseCase: EnrollStudentUseCase;
   unenrollStudentUseCase: UnenrollStudentUseCase;
   moveStudentBetweenClassesUseCase: MoveStudentBetweenClassesUseCase;
@@ -164,7 +166,7 @@ export const initContainer = async (): Promise<AppContainer> => {
     new TeacherExperienceRule(),
     new TeacherPreferenceRule()
   ]);
-  const optimizer = new Optimizer();
+  const optimizer = new Optimizer(ruleEngine);
   const proposalAssembler = new ProposalAssembler();
   
   const schedulingEngine = new SchedulingEngine(
@@ -195,6 +197,7 @@ export const initContainer = async (): Promise<AppContainer> => {
   const getStudentByIdUseCase = new GetStudentByIdUseCase(studentRepository);
   const createStudentUseCase = new CreateStudentUseCase(studentRepository);
   const archiveStudentUseCase = new ArchiveStudentUseCase(studentRepository);
+  const importStudentsUseCase = new ImportStudentsUseCase(studentRepository, bookRepository);
   const enrollStudentUseCase = new EnrollStudentUseCase(classRepository, studentRepository);
   const unenrollStudentUseCase = new UnenrollStudentUseCase(classRepository);
   const moveStudentBetweenClassesUseCase = new MoveStudentBetweenClassesUseCase(classRepository, studentRepository);
@@ -253,6 +256,7 @@ export const initContainer = async (): Promise<AppContainer> => {
     getStudentByIdUseCase,
     createStudentUseCase,
     archiveStudentUseCase,
+    importStudentsUseCase,
     enrollStudentUseCase,
     unenrollStudentUseCase,
     moveStudentBetweenClassesUseCase,

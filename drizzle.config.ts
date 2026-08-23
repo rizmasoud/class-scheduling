@@ -7,6 +7,6 @@ export default defineConfig({
   dbCredentials: {
     // For local dev with Drizzle Kit, we can use a dummy or a local sqlite file.
     // In production, Tauri handles the real database path internally.
-    url: 'sqlite.db',
+    url: 'file:local.db',
   },
 });

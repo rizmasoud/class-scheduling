@@ -12,6 +12,7 @@ import { StudentTransferDialog } from './StudentTransferDialog';
 import { TeacherAssignmentDialog } from './TeacherAssignmentDialog';
 import { ScheduleEditorDialog } from './ScheduleEditorDialog';
 import { Link, useParams } from '@tanstack/react-router';
+import { CommitProposalDialog } from '@/features/proposals/components/CommitProposalDialog';
 
 const formatReason = (reason: string) => {
   switch (reason) {
@@ -36,6 +37,7 @@ export const ProposalEditPage: React.FC = () => {
   const [transferOpened, setTransferOpened] = useState(false);
   const [teacherAssignOpened, setTeacherAssignOpened] = useState(false);
   const [scheduleEditOpened, setScheduleEditOpened] = useState(false);
+  const [commitOpened, setCommitOpened] = useState(false);
   const [selectedClass, setSelectedClass] = useState<ProposalClass | null>(null);
 
   if (isLoadingProposal || isLoadingBooks || isLoadingTeachers || isLoadingStudents) {
@@ -77,7 +79,7 @@ export const ProposalEditPage: React.FC = () => {
         <Group justify="space-between" align="flex-start">
           <Stack gap="xs">
             <Group align="center">
-              <Title order={2}>Edit Proposal</Title>
+              <Title order={2}>Review Proposal</Title>
               <Badge color={isDraft ? 'blue' : proposal.status === 'Committed' ? 'green' : 'gray'}>
                 {proposal.status}
               </Badge>
@@ -95,6 +97,11 @@ export const ProposalEditPage: React.FC = () => {
             </Text>
           </Stack>
           <Group>
+            {isDraft && (
+              <Button color="blue" onClick={() => setCommitOpened(true)}>
+                Commit Proposal
+              </Button>
+            )}
             <Button variant="light" disabled={!isDraft} onClick={() => { setSelectedClass(null); setTransferOpened(true); }}>
               Transfer Students
             </Button>
@@ -203,6 +210,11 @@ export const ProposalEditPage: React.FC = () => {
 
       {proposal && books && teachers && students && (
         <>
+          <CommitProposalDialog
+            opened={commitOpened}
+            onClose={() => setCommitOpened(false)}
+            proposal={proposal}
+          />
           <StudentTransferDialog
             opened={transferOpened}
             onClose={() => setTransferOpened(false)}

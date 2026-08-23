@@ -9,13 +9,11 @@ describe('GetAllBooksUseCase', () => {
       { id: 'b-2', name: 'Book 2', level: 2, sequenceOrder: 2, sessionCount: 20 }
     ];
     const mockRepo: IBookRepository = {
-      save: vi.fn(),
-      findById: vi.fn(),
+      save: vi.fn(), findById: vi.fn(),
       findAll: vi.fn().mockResolvedValue(books),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            archive: vi.fn(),
-    };
+            archive: vi.fn(), };
 
     const useCase = new GetAllBooksUseCase(mockRepo);
     

@@ -44,6 +44,20 @@ export const useArchiveStudent = () => {
 };
 
 import { PromoteStudentDTO } from '@/application/use-cases/students/promote-student.use-case';
+import { ImportStudentRow, ImportStudentsResult } from '@/application/use-cases/students/import-students.use-case';
+
+export const useImportStudents = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { rows: ImportStudentRow[], dryRun: boolean }) => 
+      getContainer().importStudentsUseCase.execute(data.rows, data.dryRun),
+    onSuccess: (data, variables) => {
+      if (!variables.dryRun && data.importedCount > 0) {
+        queryClient.invalidateQueries({ queryKey: STUDENTS_QUERY_KEY });
+      }
+    },
+  });
+};
 
 export const usePromoteStudent = () => {
   const queryClient = useQueryClient();

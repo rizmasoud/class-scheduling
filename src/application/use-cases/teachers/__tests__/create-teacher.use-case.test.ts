@@ -10,8 +10,7 @@ describe('CreateTeacherUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      archive: vi.fn(),
-    };
+      archive: vi.fn(), };
 
     const useCase = new CreateTeacherUseCase(mockRepo);
     
@@ -35,8 +34,7 @@ describe('CreateTeacherUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      archive: vi.fn(),
-    };
+      archive: vi.fn(), };
 
     const useCase = new CreateTeacherUseCase(mockRepo);
     
@@ -66,8 +64,7 @@ describe('CreateTeacherUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),      
-      archive: vi.fn(),
-    };
+      archive: vi.fn(), };
     const useCase = new CreateTeacherUseCase(mockRepo);
     
     const result = await useCase.execute({

@@ -63,20 +63,22 @@ export class UpdateProposalUseCase {
       updatedClasses = [];
     } else if (dto.classes) {
       updatedClasses = dto.classes.map((cls) => {
+        const existingClass = existingProposal.classes?.find(c => c.id === cls.id);
         const proposalClassId = cls.id ?? (crypto.randomUUID() as ProposalClassId);
+
         return {
           id: proposalClassId,
           proposalId: dto.id,
           bookId: cls.bookId,
-          teacherId: cls.teacherId !== undefined ? cls.teacherId : null,
+          teacherId: cls.teacherId !== undefined ? cls.teacherId : (existingClass?.teacherId ?? null),
           generatedName: cls.generatedName,
-          customName: cls.customName !== undefined ? cls.customName : null,
-          score: cls.score ?? 0,
-          reasons: cls.reasons ?? [],
-          editedBySupervisor: cls.editedBySupervisor ?? false,
-          status: cls.status ?? 'Pending',
-          notes: cls.notes !== undefined ? cls.notes : null,
-          studentIds: [],
+          customName: cls.customName !== undefined ? cls.customName : (existingClass?.customName ?? null),
+          score: cls.score ?? existingClass?.score ?? 0,
+          reasons: cls.reasons ?? existingClass?.reasons ?? [],
+          editedBySupervisor: cls.editedBySupervisor ?? existingClass?.editedBySupervisor ?? false,
+          status: cls.status ?? existingClass?.status ?? 'Pending',
+          notes: cls.notes !== undefined ? cls.notes : (existingClass?.notes ?? null),
+          studentIds: existingClass?.studentIds ?? [],
           schedules: cls.schedules
             ? cls.schedules.map((sch) => ({
                 id: sch.id ?? (crypto.randomUUID() as ProposalClassScheduleId),
@@ -85,7 +87,7 @@ export class UpdateProposalUseCase {
                 startTime: sch.startTime,
                 endTime: sch.endTime,
               }))
-            : [],
+            : (existingClass?.schedules ?? []),
         };
       });
     }

@@ -11,6 +11,7 @@ import { IClassRepository } from '@/domain/repositories/i-class.repository';
 export interface ChangeClassScheduleDTO {
   proposalId: ProposalId;
   classId: ProposalClassId;
+  scheduleId: string;
   weekDay: string;
   startTime: string;
   endTime: string;
@@ -37,6 +38,7 @@ export class ChangeProposalClassScheduleUseCase extends BaseManualEditUseCase {
     const updatedProposal = this.manualEditor.changeSchedule(
       proposal,
       dto.classId,
+      dto.scheduleId,
       dto.weekDay,
       dto.startTime,
       dto.endTime,

@@ -8,14 +8,12 @@ describe('GetActiveClassesUseCase', () => {
       { id: 'c-2', name: 'Class B', bookId: 'book-2', teacherId: null, status: 'Active' as const, minCapacity: 5, targetCapacity: 10, maxCapacity: 15, notes: null, schedules: [], enrollments: [] }
     ];
     const mockRepo: IClassRepository = {
-      save: vi.fn(),
-      findById: vi.fn(),
+  save: vi.fn(), findById: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn().mockResolvedValue(classes),
       findMany: vi.fn(),
-            saveMany: vi.fn(),
-      archive: vi.fn(),
-    };
+            
+      archive: vi.fn(), };
 
     const useCase = new GetActiveClassesUseCase(mockRepo);
     

@@ -6,8 +6,7 @@ describe('GetExamByIdUseCase', () => {
   it('should return an exam by id', async () => {
     const exam = { id: 'e-1', classStudentId: 'enroll-1', score: 95, resultStatus: 'Passed' as const, supervisorDecision: null, examDate: '2023-10-27', notes: null };
     const mockRepo: IExamRepository = {
-      save: vi.fn(),
-      findById: vi.fn().mockResolvedValue(exam),
+      save: vi.fn(), findById: vi.fn().mockResolvedValue(exam),
       findAll: vi.fn(),
       findMany: vi.fn(),
     };

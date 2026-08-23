@@ -19,14 +19,13 @@ describe('UpdateClassUseCase', () => {
     };
 
     const mockRepo: IClassRepository = {
-      save: vi.fn().mockImplementation((classData) => Promise.resolve(classData)),
+  save: vi.fn().mockImplementation((classData) => Promise.resolve(classData)),
       findById: vi.fn().mockResolvedValue(existingClass),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            saveMany: vi.fn(),
-      archive: vi.fn(),
-    };
+            
+      archive: vi.fn(), };
 
     const useCase = new UpdateClassUseCase(mockRepo);
     
@@ -54,14 +53,12 @@ describe('UpdateClassUseCase', () => {
 
   it('should throw error if class not found', async () => {
     const mockRepo: IClassRepository = {
-      save: vi.fn(),
-      findById: vi.fn().mockResolvedValue(null),
+  save: vi.fn(), findById: vi.fn().mockResolvedValue(null),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            saveMany: vi.fn(),
-      archive: vi.fn(),
-    };
+            
+      archive: vi.fn(), };
 
     const useCase = new UpdateClassUseCase(mockRepo);
     
@@ -86,14 +83,13 @@ describe('UpdateClassUseCase', () => {
     };
 
     const mockRepo: IClassRepository = {
-      save: vi.fn().mockImplementation((classData) => Promise.resolve(classData)),
+  save: vi.fn().mockImplementation((classData) => Promise.resolve(classData)),
       findById: vi.fn().mockResolvedValue(existingClass),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            saveMany: vi.fn(),
-      archive: vi.fn(),
-    };
+            
+      archive: vi.fn(), };
 
     const useCase = new UpdateClassUseCase(mockRepo);
     

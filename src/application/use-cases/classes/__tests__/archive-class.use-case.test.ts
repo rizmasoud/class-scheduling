@@ -5,9 +5,7 @@ import { IClassRepository } from '@/domain/repositories/i-class.repository';
 describe('ArchiveClassUseCase', () => {
   it('should archive a class', async () => {
     const mockRepo: IClassRepository = {
-      save: vi.fn(),
-      saveMany: vi.fn(),
-      findById: vi.fn(),
+  save: vi.fn(), findById: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),

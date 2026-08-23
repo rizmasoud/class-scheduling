@@ -23,23 +23,18 @@ export class ManualProposalEditor {
       return { valid: true, score: 0, reasons: [] };
     }
 
-    // Treat each schedule as a separate candidate validation, and combine results.
-    // However, the rule engine rules (capacity, teacher conflict) evaluate the class block.
-    // For simplicity, we can validate using the first schedule as the main time slot.
-    // Since we don't support multi-schedule in the rules well anyway, let's map the first schedule.
-    const schedule = proposalClass.schedules[0];
-    const timeSlot: TimeSlot = {
+    const timeSlots: TimeSlot[] = proposalClass.schedules.map(schedule => ({
       id: schedule.id,
       weekDay: schedule.weekDay,
       startTime: schedule.startTime,
       endTime: schedule.endTime
-    };
+    }));
 
     const candidate: ClassCandidate = {
       teacherId: proposalClass.teacherId as any,
       bookId: proposalClass.bookId,
       studentIds: proposalClass.studentIds || [],
-      timeSlot
+      timeSlots
     };
 
     const result = this.ruleEngine.evaluate(candidate, context, config);
@@ -207,6 +202,7 @@ export class ManualProposalEditor {
   changeSchedule(
     proposal: SchedulingProposal,
     classId: ProposalClassId,
+    scheduleId: string,
     weekDay: string,
     startTime: string,
     endTime: string,
@@ -217,7 +213,10 @@ export class ManualProposalEditor {
     if (!pClass) throw new Error('Class not found');
     if (!pClass.schedules || pClass.schedules.length === 0) throw new Error('Class has no schedule');
     
-    const schedule = pClass.schedules[0];
+    const scheduleIndex = pClass.schedules.findIndex(s => s.id === scheduleId);
+    if (scheduleIndex === -1) throw new Error('Schedule not found');
+    
+    const schedule = pClass.schedules[scheduleIndex];
     const updatedSchedule = {
       ...schedule,
       weekDay: weekDay as any,
@@ -225,7 +224,10 @@ export class ManualProposalEditor {
       endTime
     };
 
-    const updated = { ...pClass, schedules: [updatedSchedule] };
+    const newSchedules = [...pClass.schedules];
+    newSchedules[scheduleIndex] = updatedSchedule;
+
+    const updated = { ...pClass, schedules: newSchedules };
     return this.updateProposalClass(proposal, updated, context, config);
   }
 }

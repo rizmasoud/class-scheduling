@@ -19,45 +19,35 @@ describe('GenerateProposalUseCase', () => {
       findMany: vi.fn(),
       save: vi.fn().mockImplementation((p) => Promise.resolve(p)),
       saveWithClasses: vi.fn(),
-      archive: vi.fn(),
-    };
+      archive: vi.fn(), };
     
     const mockBookRepo: IBookRepository = {
       findById: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn().mockResolvedValue([{ id: 'b-1', name: 'Book 1' }]),
       findMany: vi.fn(),
-      save: vi.fn(),
-      archive: vi.fn(),
-    };
+      save: vi.fn(), archive: vi.fn(), };
     
     const mockTeacherRepo: ITeacherRepository = {
       findById: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn().mockResolvedValue([{ id: 't-1', fullName: 'Teacher 1' }]),
       findMany: vi.fn(),
-      save: vi.fn(),
-      archive: vi.fn(),
-    };
+      save: vi.fn(), archive: vi.fn(), };
     
     const mockStudentRepo: IStudentRepository = {
       findById: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn().mockResolvedValue([{ id: 's-1', fullName: 'Student 1' }]),
       findMany: vi.fn(),
-      save: vi.fn(),
-      archive: vi.fn(),
-    };
+      save: vi.fn(), archive: vi.fn(), };
 
     const mockClassRepo: IClassRepository = {
-      findById: vi.fn(),
+  findById: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn().mockResolvedValue([{ id: 'c-1', name: 'Class 1' }]),
       findMany: vi.fn(),
-      save: vi.fn(),
-      saveMany: vi.fn(),
-      archive: vi.fn(),
-    };
+      save: vi.fn(), archive: vi.fn(), };
 
     const fakeProposal: SchedulingProposal = {
       id: 'prop-1',
@@ -119,10 +109,8 @@ describe('GenerateProposalUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      save: vi.fn(),
-      saveWithClasses: vi.fn(),
-      archive: vi.fn(),
-    };
+      save: vi.fn(), saveWithClasses: vi.fn(),
+      archive: vi.fn(), };
     
     const fakeProposal: SchedulingProposal = {
       id: 'prop-1',

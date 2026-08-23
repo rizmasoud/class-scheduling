@@ -8,11 +8,14 @@ import { EditStudentDialog } from './EditStudentDialog';
 import { ArchiveStudentDialog } from './ArchiveStudentDialog';
 import { Student } from '@/domain/models';
 
+import { ImportStudentsDialog } from './ImportStudentsDialog';
+import { Upload } from 'lucide-react';
+
 export function StudentsPage() {
   const { data: students, isLoading, refetch } = useActiveStudents();
   
   const [createOpened, setCreateOpened] = useState(false);
-  
+  const [importOpened, setImportOpened] = useState(false);
   const [editStudent, setEditStudent] = useState<Student | null>(null);
   const [archiveStudent, setArchiveStudent] = useState<Student | null>(null);
 
@@ -28,6 +31,13 @@ export function StudentsPage() {
             loading={isLoading}
           >
             Refresh
+          </Button>
+          <Button 
+            variant="light"
+            leftSection={<Upload size={16} />} 
+            onClick={() => setImportOpened(true)}
+          >
+            Import CSV
           </Button>
           <Button 
             leftSection={<Plus size={16} />} 
@@ -48,6 +58,11 @@ export function StudentsPage() {
       <CreateStudentDialog 
         opened={createOpened} 
         onClose={() => setCreateOpened(false)} 
+      />
+
+      <ImportStudentsDialog
+        opened={importOpened}
+        onClose={() => setImportOpened(false)}
       />
 
       <EditStudentDialog 

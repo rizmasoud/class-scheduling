@@ -43,8 +43,7 @@ describe('UpdateExamUseCase', () => {
 
   it('should throw error if exam not found', async () => {
     const mockRepo: IExamRepository = {
-      save: vi.fn(),
-      findById: vi.fn().mockResolvedValue(null),
+      save: vi.fn(), findById: vi.fn().mockResolvedValue(null),
       findAll: vi.fn(),
       findMany: vi.fn(),
     };

@@ -29,19 +29,19 @@ export class CandidateGenerator {
       const bookStudents = context.activeStudents.filter(s => s.currentBookId === book.id);
       
       if (bookStudents.length === 0) continue;
-
       if (eligibleTeachers.length === 0) {
         recordReason(bookStudents.map(s => s.id), 'NO_ELIGIBLE_TEACHER');
         continue;
       }
 
       for (const teacher of eligibleTeachers) {
-        for (const slot of timeSlots) {
-          if (!this.isTeacherAvailable(teacher, slot)) continue;
+        const teacherSlots = timeSlots.filter(s => this.isTeacherAvailable(teacher, s));
+        const slotCombinations = this.getCombinations(teacherSlots, book.sessionCount);
 
+        for (const combo of slotCombinations) {
           const availableStudents = bookStudents.filter(s => 
-            this.areStudentsAvailable([s.id], slot, context.activeStudents) &&
-            !this.slotConflictsWithExistingClasses([s.id], teacher, slot, context)
+            this.areStudentsAvailable([s.id], combo, context.activeStudents) &&
+            !this.comboConflictsWithExistingClasses([s.id], teacher, combo, context)
           );
 
           if (availableStudents.length === 0) continue;
@@ -51,13 +51,13 @@ export class CandidateGenerator {
             const chunk = availableStudents.slice(i, i + config.maximumCapacity);
             const chunkIds = chunk.map(s => s.id);
             
-            candidates.push(this.generateCandidate(book, teacher, chunkIds, slot));
+            candidates.push(this.generateCandidate(book, teacher, chunkIds, combo));
             chunkIds.forEach(id => studentHasCandidate.add(id));
 
             // Generate single-student fallback candidates
             if (chunk.length > 1) {
               for (const s of chunk) {
-                candidates.push(this.generateCandidate(book, teacher, [s.id], slot));
+                candidates.push(this.generateCandidate(book, teacher, [s.id], combo));
               }
             }
           }
@@ -72,6 +72,23 @@ export class CandidateGenerator {
     }
 
     return { candidates, rejectionReasons };
+  }
+
+  private getCombinations<T>(array: readonly T[], size: number): T[][] {
+    const result: T[][] = [];
+    const helper = (start: number, current: T[]) => {
+      if (current.length === size) {
+        result.push([...current]);
+        return;
+      }
+      for (let i = start; i < array.length; i++) {
+        current.push(array[i]);
+        helper(i + 1, current);
+        current.pop();
+      }
+    };
+    helper(0, []);
+    return result;
   }
 
   private findEligibleTeachers(book: Book, teachers: readonly Teacher[]): Teacher[] {
@@ -101,29 +118,30 @@ export class CandidateGenerator {
         }
       }
     }
-
     return true;
   }
 
-  private areStudentsAvailable(studentIds: readonly string[], slot: TimeSlot, allStudents: readonly Student[]): boolean {
-    for (const studentId of studentIds) {
-      const student = allStudents.find(s => s.id === studentId);
-      if (!student || !student.preference) continue;
-      
-      const oddDays = ['Saturday', 'Monday', 'Wednesday'];
-      const evenDays = ['Sunday', 'Tuesday', 'Thursday'];
-      const isOdd = oddDays.includes(slot.weekDay);
-      const isEven = evenDays.includes(slot.weekDay);
+  private areStudentsAvailable(studentIds: readonly string[], slots: readonly TimeSlot[], allStudents: readonly Student[]): boolean {
+    for (const slot of slots) {
+      for (const studentId of studentIds) {
+        const student = allStudents.find(s => s.id === studentId);
+        if (!student || !student.preference) continue;
+        
+        const oddDays = ['Saturday', 'Monday', 'Wednesday'];
+        const evenDays = ['Sunday', 'Tuesday', 'Thursday'];
+        const isOdd = oddDays.includes(slot.weekDay);
+        const isEven = evenDays.includes(slot.weekDay);
 
-      const pattern = student.preference.availableDayPattern;
-      if (pattern === 'Odd' && !isOdd) return false;
-      if (pattern === 'Even' && !isEven) return false;
+        const pattern = student.preference.availableDayPattern;
+        if (pattern === 'Odd' && !isOdd) return false;
+        if (pattern === 'Even' && !isEven) return false;
 
-      if (student.preference.unavailableTimeRanges) {
-        for (const range of student.preference.unavailableTimeRanges) {
-          const [start, end] = range.split('-');
-          if (this.timeOverlaps(slot.startTime, slot.endTime, start, end)) {
-            return false;
+        if (student.preference.unavailableTimeRanges) {
+          for (const range of student.preference.unavailableTimeRanges) {
+            const [start, end] = range.split('-');
+            if (this.timeOverlaps(slot.startTime, slot.endTime, start, end)) {
+              return false;
+            }
           }
         }
       }
@@ -131,35 +149,33 @@ export class CandidateGenerator {
     return true;
   }
 
-  private slotConflictsWithExistingClasses(
+  private comboConflictsWithExistingClasses(
     studentIds: readonly string[], 
     teacher: Teacher, 
-    slot: TimeSlot, 
+    slots: readonly TimeSlot[], 
     context: SchedulingContext
   ): boolean {
-    for (const activeClass of context.activeClasses) {
-      const hasOverlappingSchedule = activeClass.schedules?.some(schedule => 
-        schedule.weekDay === slot.weekDay && 
-        this.timeOverlaps(slot.startTime, slot.endTime, schedule.startTime, schedule.endTime)
-      );
-
-      if (!hasOverlappingSchedule) {
-        continue;
-      }
-
-      if (activeClass.teacherId === teacher.id) {
-        return true;
-      }
-
-      if (activeClass.enrollments) {
-        for (const enrollment of activeClass.enrollments) {
-          if (enrollment.enrollmentStatus === 'Active' && studentIds.includes(enrollment.studentId)) {
-            return true;
+    for (const slot of slots) {
+      for (const activeClass of context.activeClasses) {
+        const hasOverlappingSchedule = activeClass.schedules?.some(schedule => 
+          schedule.weekDay === slot.weekDay && 
+          this.timeOverlaps(slot.startTime, slot.endTime, schedule.startTime, schedule.endTime)
+        );
+        if (!hasOverlappingSchedule) {
+          continue;
+        }
+        if (activeClass.teacherId === teacher.id) {
+          return true;
+        }
+        if (activeClass.enrollments) {
+          for (const enrollment of activeClass.enrollments) {
+            if (enrollment.enrollmentStatus === 'Active' && studentIds.includes(enrollment.studentId)) {
+              return true;
+            }
           }
         }
       }
     }
-    
     return false;
   }
 
@@ -168,7 +184,6 @@ export class CandidateGenerator {
     const e1 = this.parseTime(end1);
     const s2 = this.parseTime(start2);
     const e2 = this.parseTime(end2);
-
     return Math.max(s1, s2) < Math.min(e1, e2);
   }
 
@@ -181,13 +196,13 @@ export class CandidateGenerator {
     book: Book, 
     teacher: Teacher, 
     studentIds: readonly string[], 
-    slot: TimeSlot
+    timeSlots: readonly TimeSlot[]
   ): ClassCandidate {
     return {
       bookId: book.id,
       teacherId: teacher.id,
       studentIds,
-      timeSlot: slot
+      timeSlots
     };
   }
 }

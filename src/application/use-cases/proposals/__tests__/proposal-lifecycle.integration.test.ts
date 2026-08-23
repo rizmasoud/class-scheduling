@@ -54,14 +54,14 @@ describe('Proposal Lifecycle (Integration)', () => {
       new TimeSlotGenerator(),
       new CandidateGenerator(),
       ruleEngine,
-      new Optimizer(),
+      new Optimizer(new RuleEngine([])),
       new ProposalAssembler()
     );
 
     manualEditor = new ManualProposalEditor(ruleEngine);
 
     // Seed master data
-    const book: Book = { id: 'book-1' as any, name: 'Level 1 Book', level: 1, sequenceOrder: 1, sessionCount: 10 };
+    const book: Book = { id: 'book-1' as any, name: 'Level 1 Book', level: 1, sequenceOrder: 1, sessionCount: 1 };
     await bookRepo.save(book);
 
     const teacher1: Teacher = {
@@ -177,6 +177,7 @@ describe('Proposal Lifecycle (Integration)', () => {
     await changeScheduleUseCase.execute({
       proposalId: generated.id,
       classId: 'pc-2' as ProposalClassId,
+      scheduleId: 'sch-2',
       weekDay: 'Wednesday',
       startTime: '14:00',
       endTime: '16:00',

@@ -9,8 +9,7 @@ describe('GetAllExamsUseCase', () => {
       { id: 'e-2', classStudentId: 'enroll-2', score: 85, resultStatus: 'Passed' as const, supervisorDecision: null, examDate: '2023-10-28', notes: null }
     ];
     const mockRepo: IExamRepository = {
-      save: vi.fn(),
-      findById: vi.fn(),
+      save: vi.fn(), findById: vi.fn(),
       findAll: vi.fn().mockResolvedValue(exams),
       findMany: vi.fn(),
     };

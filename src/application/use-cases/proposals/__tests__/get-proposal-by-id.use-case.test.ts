@@ -12,15 +12,13 @@ describe('GetProposalByIdUseCase', () => {
       classes: [],
     };
     const mockRepo: IProposalRepository = {
-      save: vi.fn(),
-      saveWithClasses: vi.fn(),
+      save: vi.fn(), saveWithClasses: vi.fn(),
       findById: vi.fn().mockResolvedValue(proposal),
       findActiveDraft: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      archive: vi.fn(),
-    };
+      archive: vi.fn(), };
 
     const useCase = new GetProposalByIdUseCase(mockRepo);
 

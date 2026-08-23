@@ -103,8 +103,8 @@ export const useAssignTeacher = (proposalId: ProposalId) => {
 export const useChangeSchedule = (proposalId: ProposalId) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ classId, weekDay, startTime, endTime }: { classId: ProposalClassId, weekDay: string, startTime: string, endTime: string }) => 
-      getContainer().changeProposalClassScheduleUseCase.execute({ proposalId, classId, weekDay, startTime, endTime, config: defaultSchedulingConfig }),
+    mutationFn: ({ classId, scheduleId, weekDay, startTime, endTime }: { classId: ProposalClassId, scheduleId: string, weekDay: string, startTime: string, endTime: string }) => 
+      getContainer().changeProposalClassScheduleUseCase.execute({ proposalId, classId, scheduleId, weekDay, startTime, endTime, config: defaultSchedulingConfig }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: PROPOSAL_DETAIL_QUERY_KEY(proposalId) });
       queryClient.invalidateQueries({ queryKey: PROPOSALS_QUERY_KEY });

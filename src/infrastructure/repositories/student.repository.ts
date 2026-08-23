@@ -128,6 +128,25 @@ export class StudentRepository
     });
   }
 
+  async saveMany(studentsList: readonly Student[]): Promise<void> {
+    if (studentsList.length === 0) return;
+    
+    await this.db.transaction(async (tx) => {
+      const studentPersistenceModels = studentsList.map(s => StudentMapper.toPersistence(s));
+      const preferencePersistenceModels = studentsList
+        .filter(s => s.preference)
+        .map(s => StudentMapper.toPersistencePreference(s.preference!));
+
+      // Note: This implementation assumes batch insertion for new students.
+      // Drizzle's insert().values() can accept an array for bulk inserts.
+      await tx.insert(this.table).values(studentPersistenceModels);
+      
+      if (preferencePersistenceModels.length > 0) {
+        await tx.insert(studentPreferences).values(preferencePersistenceModels);
+      }
+    });
+  }
+
   async archive(id: StudentId): Promise<void> {
     await super.executeSoftDelete(id as string);
   }

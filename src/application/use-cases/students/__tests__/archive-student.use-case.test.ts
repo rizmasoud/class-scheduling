@@ -5,8 +5,7 @@ import { IStudentRepository } from '@/domain/repositories/i-student.repository';
 describe('ArchiveStudentUseCase', () => {
   it('should archive a student', async () => {
     const mockRepo: IStudentRepository = {
-      save: vi.fn(),
-      findById: vi.fn(),
+      save: vi.fn(), findById: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),

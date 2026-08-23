@@ -5,14 +5,13 @@ import { IClassRepository } from '@/domain/repositories/i-class.repository';
 describe('CreateClassUseCase', () => {
   it('should create and save a new class without schedules', async () => {
     const mockRepo: IClassRepository = {
-      save: vi.fn().mockImplementation((classData) => Promise.resolve(classData)),
+  save: vi.fn().mockImplementation((classData) => Promise.resolve(classData)),
       findById: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            saveMany: vi.fn(),
-      archive: vi.fn(),
-    };
+            
+      archive: vi.fn(), };
 
     const useCase = new CreateClassUseCase(mockRepo);
     
@@ -43,14 +42,13 @@ describe('CreateClassUseCase', () => {
 
   it('should create and save a new class with schedules and teacherId', async () => {
     const mockRepo: IClassRepository = {
-      save: vi.fn().mockImplementation((classData) => Promise.resolve(classData)),
+  save: vi.fn().mockImplementation((classData) => Promise.resolve(classData)),
       findById: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            saveMany: vi.fn(),
-      archive: vi.fn(),
-    };
+            
+      archive: vi.fn(), };
 
     const useCase = new CreateClassUseCase(mockRepo);
     

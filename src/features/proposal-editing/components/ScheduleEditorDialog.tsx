@@ -14,6 +14,7 @@ export function ScheduleEditorDialog({ opened, onClose, proposal, initialClassId
   const changeSchedule = useChangeSchedule(proposal.id);
 
   const [selectedClass, setSelectedClass] = useState<string | null>(initialClassId || null);
+  const [selectedSchedule, setSelectedSchedule] = useState<string | null>(null);
   const [weekDay, setWeekDay] = useState<string | null>(null);
   const [startTime, setStartTime] = useState<string>('');
   const [endTime, setEndTime] = useState<string>('');
@@ -25,9 +26,12 @@ export function ScheduleEditorDialog({ opened, onClose, proposal, initialClassId
       if (targetClassId) {
         const cls = proposal.classes?.find(c => c.id === targetClassId);
         if (cls?.schedules && cls.schedules.length > 0) {
+          setSelectedSchedule(cls.schedules[0].id);
           setWeekDay(cls.schedules[0].weekDay);
           setStartTime(cls.schedules[0].startTime);
           setEndTime(cls.schedules[0].endTime);
+        } else {
+          setSelectedSchedule(null);
         }
       }
     }
@@ -36,6 +40,7 @@ export function ScheduleEditorDialog({ opened, onClose, proposal, initialClassId
   const handleClose = () => {
     if (changeSchedule.isPending) return;
     setSelectedClass(null);
+    setSelectedSchedule(null);
     setWeekDay(null);
     setStartTime('');
     setEndTime('');
@@ -45,22 +50,45 @@ export function ScheduleEditorDialog({ opened, onClose, proposal, initialClassId
   const classes = proposal.classes || [];
   const classOptions = classes.map(c => ({ value: c.id, label: c.generatedName || c.customName || c.id }));
   
+  const selectedClassObj = classes.find(c => c.id === selectedClass);
+  const scheduleOptions = (selectedClassObj?.schedules || []).map((s, index) => ({
+    value: s.id,
+    label: `Session ${index + 1} (${s.weekDay} ${s.startTime}-${s.endTime})`
+  }));
+
   const handleClassChange = (val: string | null) => {
     setSelectedClass(val);
     if (val) {
       const cls = classes.find(c => c.id === val);
       if (cls && cls.schedules && cls.schedules.length > 0) {
+        setSelectedSchedule(cls.schedules[0].id);
         setWeekDay(cls.schedules[0].weekDay);
         setStartTime(cls.schedules[0].startTime);
         setEndTime(cls.schedules[0].endTime);
+      } else {
+        setSelectedSchedule(null);
+      }
+    } else {
+      setSelectedSchedule(null);
+    }
+  };
+
+  const handleScheduleChange = (val: string | null) => {
+    setSelectedSchedule(val);
+    if (val && selectedClassObj) {
+      const sch = selectedClassObj.schedules?.find(s => s.id === val);
+      if (sch) {
+        setWeekDay(sch.weekDay);
+        setStartTime(sch.startTime);
+        setEndTime(sch.endTime);
       }
     }
   };
 
   const handleAction = () => {
-    if (selectedClass && weekDay && startTime && endTime) {
+    if (selectedClass && selectedSchedule && weekDay && startTime && endTime) {
       changeSchedule.mutate(
-        { classId: selectedClass as ProposalClassId, weekDay, startTime, endTime },
+        { classId: selectedClass as ProposalClassId, scheduleId: selectedSchedule, weekDay, startTime, endTime },
         { onSuccess: handleClose }
       );
     }
@@ -85,6 +113,16 @@ export function ScheduleEditorDialog({ opened, onClose, proposal, initialClassId
           searchable
           disabled={changeSchedule.isPending}
         />
+        {scheduleOptions.length > 0 && (
+          <Select 
+            label="Target Session" 
+            placeholder="Select Session to Edit" 
+            data={scheduleOptions} 
+            value={selectedSchedule} 
+            onChange={handleScheduleChange} 
+            disabled={changeSchedule.isPending}
+          />
+        )}
         <Select 
           label="Day of Week" 
           placeholder="Select Day" 
@@ -114,7 +152,7 @@ export function ScheduleEditorDialog({ opened, onClose, proposal, initialClassId
           <Button
             onClick={handleAction}
             loading={changeSchedule.isPending}
-            disabled={changeSchedule.isPending || !selectedClass || !weekDay || !startTime || !endTime}
+            disabled={changeSchedule.isPending || !selectedClass || !selectedSchedule || !weekDay || !startTime || !endTime}
           >
             Save Schedule
           </Button>

@@ -6,14 +6,12 @@ describe('GetClassByIdUseCase', () => {
   it('should return a class by id', async () => {
     const classData = { id: 'c-1', name: 'Class A', bookId: 'book-1', teacherId: null, status: 'Draft' as const, minCapacity: 5, targetCapacity: 10, maxCapacity: 15, notes: null, schedules: [], enrollments: [] };
     const mockRepo: IClassRepository = {
-      save: vi.fn(),
-      findById: vi.fn().mockResolvedValue(classData),
+  save: vi.fn(), findById: vi.fn().mockResolvedValue(classData),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            saveMany: vi.fn(),
-      archive: vi.fn(),
-    };
+            
+      archive: vi.fn(), };
 
     const useCase = new GetClassByIdUseCase(mockRepo);
     

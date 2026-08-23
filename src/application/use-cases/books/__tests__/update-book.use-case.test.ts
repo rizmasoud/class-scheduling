@@ -18,8 +18,7 @@ describe('UpdateBookUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            archive: vi.fn(),
-    };
+            archive: vi.fn(), };
 
     const useCase = new UpdateBookUseCase(mockRepo);
     
@@ -41,13 +40,11 @@ describe('UpdateBookUseCase', () => {
 
   it('should throw error if book not found', async () => {
     const mockRepo: IBookRepository = {
-      save: vi.fn(),
-      findById: vi.fn().mockResolvedValue(null),
+      save: vi.fn(), findById: vi.fn().mockResolvedValue(null),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            archive: vi.fn(),
-    };
+            archive: vi.fn(), };
 
     const useCase = new UpdateBookUseCase(mockRepo);
     

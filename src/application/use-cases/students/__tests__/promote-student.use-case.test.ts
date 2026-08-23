@@ -33,35 +33,27 @@ describe('PromoteStudentUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      save: vi.fn(),
-      archive: vi.fn(),
-    } as any;
+      save: vi.fn(), archive: vi.fn(), } as any;
     
     mockClassRepo = {
       findById: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      save: vi.fn(),
-      saveMany: vi.fn(),
-      archive: vi.fn(),
-    } as any;
+      save: vi.fn(), archive: vi.fn(), } as any;
 
     mockBookRepo = {
       findById: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      save: vi.fn(),
-      archive: vi.fn(),
-    } as any;
+      save: vi.fn(), archive: vi.fn(), } as any;
 
     mockExamRepo = {
       findById: vi.fn(),
       findAll: vi.fn(),
       findMany: vi.fn(),
-      save: vi.fn(),
-    } as any;
+      save: vi.fn(), } as any;
 
     mockTx = {};
     mockDb = {

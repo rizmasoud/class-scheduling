@@ -9,13 +9,11 @@ describe('GetAllTeachersUseCase', () => {
       { id: 't-2', fullName: 'Teacher 2', notes: null, preference: null, skills: [] }
     ];
     const mockRepo: ITeacherRepository = {
-      save: vi.fn(),
-      findById: vi.fn(),
+      save: vi.fn(), findById: vi.fn(),
       findAll: vi.fn().mockResolvedValue(teachers),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            archive: vi.fn(),
-    };
+            archive: vi.fn(), };
 
     const useCase = new GetAllTeachersUseCase(mockRepo);
     

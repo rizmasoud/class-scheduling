@@ -38,13 +38,13 @@ export class ProposalAssembler {
       
       const proposalClassId = input.generateProposalClassId();
       
-      const schedule: ProposalClassSchedule = {
+      const schedules: ProposalClassSchedule[] = candidate.timeSlots.map(slot => ({
         id: input.generateProposalClassScheduleId(),
         proposalClassId,
-        weekDay: candidate.timeSlot.weekDay as WeekDay,
-        startTime: candidate.timeSlot.startTime,
-        endTime: candidate.timeSlot.endTime
-      };
+        weekDay: slot.weekDay as WeekDay,
+        startTime: slot.startTime,
+        endTime: slot.endTime
+      }));
 
       const proposalClass: ProposalClass = {
         id: proposalClassId,
@@ -59,7 +59,7 @@ export class ProposalAssembler {
         editedBySupervisor: false,
         status: 'Pending',
         notes: null,
-        schedules: [schedule]
+        schedules
       };
 
       return proposalClass;

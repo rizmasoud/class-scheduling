@@ -8,13 +8,11 @@ describe('GetActiveBooksUseCase', () => {
       { id: 'b-1', name: 'Book 1', level: 1, sequenceOrder: 1, sessionCount: 10 }
     ];
     const mockRepo: IBookRepository = {
-      save: vi.fn(),
-      findById: vi.fn(),
+      save: vi.fn(), findById: vi.fn(),
       findAll: vi.fn(),
       findAllActive: vi.fn().mockResolvedValue(books),
       findMany: vi.fn(),
-            archive: vi.fn(),
-    };
+            archive: vi.fn(), };
 
     const useCase = new GetActiveBooksUseCase(mockRepo);
     

@@ -18,8 +18,7 @@ describe('UpdateTeacherUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      archive: vi.fn(),
-    };
+      archive: vi.fn(), };
 
     const useCase = new UpdateTeacherUseCase(mockRepo);
     
@@ -47,13 +46,11 @@ describe('UpdateTeacherUseCase', () => {
 
   it('should throw error if teacher not found', async () => {
     const mockRepo: ITeacherRepository = {
-      save: vi.fn(),
-      findById: vi.fn().mockResolvedValue(null),
+      save: vi.fn(), findById: vi.fn().mockResolvedValue(null),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      archive: vi.fn(),
-    };
+      archive: vi.fn(), };
 
     const useCase = new UpdateTeacherUseCase(mockRepo);
     
@@ -84,8 +81,7 @@ describe('UpdateTeacherUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      archive: vi.fn(),
-    };
+      archive: vi.fn(), };
 
     const useCase = new UpdateTeacherUseCase(mockRepo);
     
@@ -113,8 +109,7 @@ describe('UpdateTeacherUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),      
-      archive: vi.fn(),
-    };
+      archive: vi.fn(), };
     const useCase = new UpdateTeacherUseCase(mockRepo);
     
     const result = await useCase.execute({

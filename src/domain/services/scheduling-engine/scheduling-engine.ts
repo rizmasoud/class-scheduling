@@ -57,20 +57,19 @@ export class SchedulingEngine {
       }
     }
 
-    const { accepted: optimizedCandidates, rejectionReasons: optimizerRejections } = this.optimizer.optimize(evaluatedCandidates, context);
+    const { accepted: optimizedCandidates, rejectionReasons: optimizerRejections } = this.optimizer.optimize(evaluatedCandidates, context, input.config);
 
-    const assemblerCandidates: AssemblerCandidate[] = optimizedCandidates.map(cand => {
-      const evalCand = evaluatedMap.get(cand)!;
+    const assemblerCandidates: AssemblerCandidate[] = optimizedCandidates.map(evalCand => {
       return {
-        candidate: cand,
+        candidate: evalCand.candidate,
         score: evalCand.totalScore,
         reasons: evalCand.reasons
       };
     });
 
     const acceptedStudentIds = new Set<string>();
-    for (const cand of optimizedCandidates) {
-      for (const studentId of cand.studentIds) {
+    for (const evalCand of optimizedCandidates) {
+      for (const studentId of evalCand.candidate.studentIds) {
         acceptedStudentIds.add(studentId);
       }
     }

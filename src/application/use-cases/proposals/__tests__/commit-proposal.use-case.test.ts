@@ -57,10 +57,8 @@ describe('CommitProposalUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      save: vi.fn(),
-      saveWithClasses: vi.fn().mockResolvedValue(undefined),
-      archive: vi.fn(),
-    };
+      save: vi.fn(), saveWithClasses: vi.fn().mockResolvedValue(undefined),
+      archive: vi.fn(), };
 
     const useCase = new CommitProposalUseCase(mockProposalRepo);
     await useCase.execute('p-1' as ProposalId);
@@ -90,10 +88,8 @@ describe('CommitProposalUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      save: vi.fn(),
-      saveWithClasses: vi.fn(),
-      archive: vi.fn(),
-    };
+      save: vi.fn(), saveWithClasses: vi.fn(),
+      archive: vi.fn(), };
 
     const useCase = new CommitProposalUseCase(mockProposalRepo);
     await expect(useCase.execute('p-1' as ProposalId)).rejects.toThrow(/already committed/);
@@ -114,10 +110,8 @@ describe('CommitProposalUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      save: vi.fn(),
-      saveWithClasses: vi.fn(),
-      archive: vi.fn(),
-    };
+      save: vi.fn(), saveWithClasses: vi.fn(),
+      archive: vi.fn(), };
 
     const useCase = new CommitProposalUseCase(mockProposalRepo);
     await expect(useCase.execute('p-1' as ProposalId)).rejects.toThrow(/archived proposal/);

@@ -28,14 +28,13 @@ describe('UnenrollStudentUseCase', () => {
     };
 
     const mockClassRepo: IClassRepository = {
-      findById: vi.fn().mockResolvedValue(clazz),
+  findById: vi.fn().mockResolvedValue(clazz),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
       save: vi.fn().mockImplementation((c) => Promise.resolve(c)),
-                        saveMany: vi.fn(),
-      archive: vi.fn(),
-    };
+                        
+      archive: vi.fn(), };
     
     const useCase = new UnenrollStudentUseCase(mockClassRepo);
     
@@ -54,14 +53,11 @@ describe('UnenrollStudentUseCase', () => {
 
   it('should throw an error if class does not exist', async () => {
     const mockClassRepo: IClassRepository = {
-      findById: vi.fn().mockResolvedValue(null),
+  findById: vi.fn().mockResolvedValue(null),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      save: vi.fn(),
-                        saveMany: vi.fn(),
-      archive: vi.fn(),
-    };
+      save: vi.fn(), archive: vi.fn(), };
     
     const useCase = new UnenrollStudentUseCase(mockClassRepo);
 

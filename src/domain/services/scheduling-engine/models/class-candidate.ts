@@ -5,5 +5,5 @@ export interface ClassCandidate {
   readonly teacherId: TeacherId;
   readonly bookId: BookId;
   readonly studentIds: readonly StudentId[];
-  readonly timeSlot: TimeSlot;
+  readonly timeSlots: readonly TimeSlot[];
 }

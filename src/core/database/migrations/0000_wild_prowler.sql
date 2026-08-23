@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `books` (
+CREATE TABLE `books` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
 	`level` real NOT NULL,
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `books` (
 	`archived_at` text
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS `class_schedules` (
+CREATE TABLE `class_schedules` (
 	`id` text PRIMARY KEY NOT NULL,
 	`class_id` text NOT NULL,
 	`week_day` text NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `class_schedules` (
 	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS `class_students` (
+CREATE TABLE `class_students` (
 	`id` text PRIMARY KEY NOT NULL,
 	`class_id` text NOT NULL,
 	`student_id` text NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `class_students` (
 	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS `classes` (
+CREATE TABLE `classes` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
 	`book_id` text NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `classes` (
 	`archived_at` text
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS `exam_results` (
+CREATE TABLE `exam_results` (
 	`id` text PRIMARY KEY NOT NULL,
 	`class_student_id` text NOT NULL,
 	`score` integer NOT NULL,
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS `exam_results` (
 	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS `teachers` (
+CREATE TABLE `teachers` (
 	`id` text PRIMARY KEY NOT NULL,
 	`full_name` text NOT NULL,
 	`notes` text,
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `teachers` (
 	`archived_at` text
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS `students` (
+CREATE TABLE `students` (
 	`id` text PRIMARY KEY NOT NULL,
 	`full_name` text NOT NULL,
 	`current_book_id` text NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS `students` (
 	`archived_at` text
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS `student_preferences` (
+CREATE TABLE `student_preferences` (
 	`id` text PRIMARY KEY NOT NULL,
 	`student_id` text NOT NULL,
 	`available_day_pattern` text NOT NULL,
@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS `student_preferences` (
 	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS `teacher_preferences` (
+CREATE TABLE `teacher_preferences` (
 	`id` text PRIMARY KEY NOT NULL,
 	`teacher_id` text NOT NULL,
 	`unavailable_day_pattern` text,
@@ -101,8 +101,8 @@ CREATE TABLE IF NOT EXISTS `teacher_preferences` (
 	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX IF NOT EXISTS `teacher_preferences_teacher_id_unique` ON `teacher_preferences` (`teacher_id`);--> statement-breakpoint
-CREATE TABLE IF NOT EXISTS `teacher_skills` (
+CREATE UNIQUE INDEX `teacher_preferences_teacher_id_unique` ON `teacher_preferences` (`teacher_id`);--> statement-breakpoint
+CREATE TABLE `teacher_skills` (
 	`id` text PRIMARY KEY NOT NULL,
 	`teacher_id` text NOT NULL,
 	`book_id` text NOT NULL,
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS `teacher_skills` (
 	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS `teacher_attendance` (
+CREATE TABLE `teacher_attendance` (
 	`id` text PRIMARY KEY NOT NULL,
 	`schedule_id` text NOT NULL,
 	`attendance_date` text NOT NULL,
@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS `teacher_attendance` (
 	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS `scheduling_proposals` (
+CREATE TABLE `scheduling_proposals` (
 	`id` text PRIMARY KEY NOT NULL,
 	`generated_at` text NOT NULL,
 	`status` text DEFAULT 'Draft' NOT NULL,
@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS `scheduling_proposals` (
 	`archived_at` text
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS `proposal_classes` (
+CREATE TABLE `proposal_classes` (
 	`id` text PRIMARY KEY NOT NULL,
 	`proposal_id` text NOT NULL,
 	`book_id` text NOT NULL,
@@ -148,7 +148,7 @@ CREATE TABLE IF NOT EXISTS `proposal_classes` (
 	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS `proposal_class_schedules` (
+CREATE TABLE `proposal_class_schedules` (
 	`id` text PRIMARY KEY NOT NULL,
 	`proposal_class_id` text NOT NULL,
 	`week_day` text NOT NULL,

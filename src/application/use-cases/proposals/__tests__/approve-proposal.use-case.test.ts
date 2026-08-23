@@ -36,8 +36,7 @@ describe('ApproveProposalUseCase', () => {
       findMany: vi.fn(),
       save: vi.fn().mockImplementation((p) => Promise.resolve(p)),
       saveWithClasses: vi.fn(),
-      archive: vi.fn(),
-    };
+      archive: vi.fn(), };
 
     const useCase = new ApproveProposalUseCase(mockProposalRepo);
     const result = await useCase.execute('p-1' as ProposalId);
@@ -54,10 +53,8 @@ describe('ApproveProposalUseCase', () => {
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      save: vi.fn(),
-      saveWithClasses: vi.fn(),
-      archive: vi.fn(),
-    };
+      save: vi.fn(), saveWithClasses: vi.fn(),
+      archive: vi.fn(), };
 
     const useCase = new ApproveProposalUseCase(mockProposalRepo);
     await expect(useCase.execute('non-existent' as ProposalId)).rejects.toThrow();

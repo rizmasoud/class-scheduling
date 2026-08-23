@@ -48,7 +48,7 @@ describe('ProposalAssembler', () => {
       bookId: 'b1',
       teacherId: 't1',
       studentIds: ['st1'],
-      timeSlot: slot
+      timeSlots: [slot]
     };
 
     const cand: AssemblerCandidate = {
@@ -106,7 +106,7 @@ describe('ProposalAssembler', () => {
       bookId: 'b1',
       teacherId: null as any, // assuming it could be null if no teacher assigned yet
       studentIds: [],
-      timeSlot: slot
+      timeSlots: [slot]
     };
 
     const cand: AssemblerCandidate = {
@@ -135,12 +135,12 @@ describe('ProposalAssembler', () => {
     const assembler = new ProposalAssembler();
 
     const cand1: AssemblerCandidate = {
-      candidate: { bookId: 'b1', teacherId: 't1', studentIds: [], timeSlot: slot },
+      candidate: { bookId: 'b1', teacherId: 't1', studentIds: [], timeSlots: [slot] },
       score: 90,
       reasons: []
     };
     const cand2: AssemblerCandidate = {
-      candidate: { bookId: 'b1', teacherId: 't2', studentIds: [], timeSlot: slot },
+      candidate: { bookId: 'b1', teacherId: 't2', studentIds: [], timeSlots: [slot] },
       score: 80,
       reasons: []
     };

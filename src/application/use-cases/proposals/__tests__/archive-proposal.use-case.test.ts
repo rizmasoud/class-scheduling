@@ -5,8 +5,7 @@ import { IProposalRepository } from '@/domain/repositories/i-proposal.repository
 describe('ArchiveProposalUseCase', () => {
   it('should archive a proposal', async () => {
     const mockRepo: IProposalRepository = {
-      save: vi.fn(),
-      saveWithClasses: vi.fn(),
+      save: vi.fn(), saveWithClasses: vi.fn(),
       findById: vi.fn().mockResolvedValue({ id: 'p-1', status: 'Draft' }),
       findActiveDraft: vi.fn(),
       findAll: vi.fn(),

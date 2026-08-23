@@ -36,7 +36,8 @@ export class MoveStudentBetweenClassesUseCase {
     const enrollmentId = crypto.randomUUID() as EnrollmentId;
     const updatedNewClass = enrollStudent(newClass, student, enrollmentId, dto.date);
 
-    const [savedOldClass, savedNewClass] = await this.classRepository.saveMany([updatedOldClass, updatedNewClass]);
+    const savedOldClass = await this.classRepository.save(updatedOldClass);
+    const savedNewClass = await this.classRepository.save(updatedNewClass);
 
     return {
       oldClass: savedOldClass,

@@ -6,13 +6,11 @@ describe('GetBookByIdUseCase', () => {
   it('should return a book by id', async () => {
     const book = { id: 'b-1', name: 'Book', level: 1, sequenceOrder: 1, sessionCount: 10 };
     const mockRepo: IBookRepository = {
-      save: vi.fn(),
-      findById: vi.fn().mockResolvedValue(book),
+      save: vi.fn(), findById: vi.fn().mockResolvedValue(book),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-            archive: vi.fn(),
-    };
+            archive: vi.fn(), };
 
     const useCase = new GetBookByIdUseCase(mockRepo);
     
