@@ -35,6 +35,18 @@ export class GenerateProposalUseCase {
       this.classRepository.findAllActive()
     ]);
 
+    const unassignedStudents = students.filter(student => {
+      const isAlreadyEnrolled = classes.some(cls => {
+        const isActiveClass = cls.status === 'Active' || cls.status === 'Scheduled';
+        const matchesBook = cls.bookId === student.currentBookId;
+        
+        if (!isActiveClass || !matchesBook) return false;
+        
+        return cls.enrollments?.some(e => e.studentId === student.id && e.enrollmentStatus === 'Active');
+      });
+      return !isAlreadyEnrolled;
+    });
+
     const proposalId = crypto.randomUUID() as ProposalId;
 
     const proposal = this.schedulingEngine.generateProposal({
@@ -42,16 +54,13 @@ export class GenerateProposalUseCase {
       generatedAt: dto.date,
       activeBooks: books,
       activeTeachers: teachers,
-      activeStudents: students,
+      activeStudents: unassignedStudents,
       activeClasses: classes,
       config: dto.config,
       generateProposalClassId: () => crypto.randomUUID(),
       generateProposalClassScheduleId: () => crypto.randomUUID()
     });
 
-    if (!proposal.classes || proposal.classes.length === 0) {
-      return proposal;
-    }
     return this.proposalRepository.save(proposal);
   }
 }

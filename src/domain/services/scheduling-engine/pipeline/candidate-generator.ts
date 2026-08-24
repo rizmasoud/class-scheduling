@@ -36,7 +36,9 @@ export class CandidateGenerator {
 
       for (const teacher of eligibleTeachers) {
         const teacherSlots = timeSlots.filter(s => this.isTeacherAvailable(teacher, s));
-        const slotCombinations = this.getCombinations(teacherSlots, book.sessionCount);
+        const slotCombinations = this.getCombinations(teacherSlots, book.sessionCount).filter(
+          combo => new Set(combo.map(s => s.weekDay)).size === combo.length
+        );
 
         for (const combo of slotCombinations) {
           const availableStudents = bookStudents.filter(s => 
@@ -46,16 +48,41 @@ export class CandidateGenerator {
 
           if (availableStudents.length === 0) continue;
 
-          // Generate candidates for chunks
-          for (let i = 0; i < availableStudents.length; i += config.maximumCapacity) {
-            const chunk = availableStudents.slice(i, i + config.maximumCapacity);
+          const numStudents = availableStudents.length;
+          let validG = 0;
+          const minG = Math.ceil(numStudents / config.maximumCapacity);
+          for (let g = minG; g * config.minimumCapacity <= numStudents; g++) {
+            if (g * config.maximumCapacity >= numStudents) {
+              validG = g;
+              break;
+            }
+          }
+
+          const chunks: Student[][] = [];
+          if (validG > 0) {
+            const baseSize = Math.floor(numStudents / validG);
+            let remainder = numStudents % validG;
+            let start = 0;
+            for (let i = 0; i < validG; i++) {
+              const size = baseSize + (remainder > 0 ? 1 : 0);
+              chunks.push(availableStudents.slice(start, start + size));
+              start += size;
+              remainder--;
+            }
+          } else {
+            for (let i = 0; i < numStudents; i += config.maximumCapacity) {
+              chunks.push(availableStudents.slice(i, i + config.maximumCapacity));
+            }
+          }
+
+          for (const chunk of chunks) {
             const chunkIds = chunk.map(s => s.id);
             
             candidates.push(this.generateCandidate(book, teacher, chunkIds, combo));
             chunkIds.forEach(id => studentHasCandidate.add(id));
 
             // Generate single-student fallback candidates
-            if (chunk.length > 1) {
+            if (config.minimumCapacity <= 1 && chunk.length > 1) {
               for (const s of chunk) {
                 candidates.push(this.generateCandidate(book, teacher, [s.id], combo));
               }

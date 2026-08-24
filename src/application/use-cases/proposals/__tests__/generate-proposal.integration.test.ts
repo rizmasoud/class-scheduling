@@ -133,7 +133,7 @@ describe('GenerateProposalUseCase (Integration)', () => {
     expect(generatedClass.generatedName).toContain('Teacher A');
   });
 
-  it('should generate a proposal with zero classes when no teacher can teach the required book', async () => {
+  it('should generate a proposal with zero classes when no teacher can teach the required book and ensure it is saved', async () => {
     const { bookRepo, teacherRepo, studentRepo, classRepo, proposalRepo } = createMockRepos();
     
     const bookA: Book = { id: 'book-A', name: 'Book A', level: 1, sequenceOrder: 1, sessionCount: 1 };
@@ -174,7 +174,66 @@ describe('GenerateProposalUseCase (Integration)', () => {
     expect(result.status).toBe('Draft');
     expect(result.classes).toBeDefined();
     expect(result.classes!.length).toBe(0);
+    expect(proposalRepo.save).toHaveBeenCalledWith(result);
   });
+
+  it('should not generate candidates or list as unscheduled if student is already actively enrolled in their current book', async () => {
+    const { bookRepo, teacherRepo, studentRepo, classRepo, proposalRepo } = createMockRepos();
+    const bookA: Book = { id: 'book-A', name: 'Book A', level: 1, sequenceOrder: 1, sessionCount: 1 };
+    const teacherA: Teacher = { id: 'teacher-A', fullName: 'Teacher A', notes: null, skills: [{ id: 's1', teacherId: 'teacher-A', bookId: 'book-A' }] };
+    
+    const studentEnrolled = {
+      id: `student-enrolled`,
+      fullName: `Student Enrolled`,
+      currentBookId: 'book-A',
+      notes: null,
+      preference: { availableDayPattern: 'Both' as any }
+    } as Student;
+
+    const studentUnassigned = {
+      id: `student-unassigned`,
+      fullName: `Student Unassigned`,
+      currentBookId: 'book-A',
+      notes: null,
+      preference: { availableDayPattern: 'Both' as any }
+    } as Student;
+
+    // Active class that studentEnrolled is already taking (non-overlapping time to ensure it's not just a time conflict)
+    const activeClass = {
+      id: 'active-1',
+      bookId: 'book-A',
+      teacherId: 'teacher-A',
+      status: 'Active',
+      minCapacity: 1, maxCapacity: 10, targetCapacity: 5, notes: null,
+      schedules: [
+        { id: 'sch-1', classId: 'active-1', weekDay: 'Thursday', startTime: '18:00', endTime: '20:00' } // Different day from config
+      ],
+      enrollments: [
+        { id: 'enr-1', classId: 'active-1', studentId: 'student-enrolled', enrollmentStatus: 'Active', joinedAt: '2023-01-01', leftAt: null }
+      ]
+    } as any;
+
+    vi.mocked(bookRepo.findAllActive).mockResolvedValue([bookA]);
+    vi.mocked(teacherRepo.findAllActive).mockResolvedValue([teacherA]);
+    vi.mocked(studentRepo.findAllActive).mockResolvedValue([studentEnrolled, studentUnassigned]);
+    vi.mocked(classRepo.findAllActive).mockResolvedValue([activeClass]);
+
+    const engine = createRealSchedulingEngine();
+    const useCase = new GenerateProposalUseCase(bookRepo, teacherRepo, studentRepo, classRepo, proposalRepo, engine);
+    
+    const result = await useCase.execute({ date: '2023-10-10', config: createConfig() });
+    
+    // Proposal shouldn't form because studentUnassigned is only 1 student, and minCapacity is 5
+    expect(result.classes!.length).toBe(0);
+    
+    // Ensure studentEnrolled is completely excluded, not even listed as unscheduled
+    const isEnrolledListed = result.unscheduledStudents!.some(u => u.studentId === 'student-enrolled');
+    const isUnassignedListed = result.unscheduledStudents!.some(u => u.studentId === 'student-unassigned');
+    
+    expect(isEnrolledListed).toBe(false);
+    expect(isUnassignedListed).toBe(true);
+  });
+
   it('should not group students with different books together', async () => {
     const { bookRepo, teacherRepo, studentRepo, classRepo, proposalRepo } = createMockRepos();
     

@@ -102,14 +102,14 @@ describe('GenerateProposalUseCase', () => {
     
     expect(result).toBe(fakeProposal);
   });
-  it('should not persist if zero classes are generated', async () => {
+  it('should persist even if zero classes are generated', async () => {
     const mockProposalRepo: IProposalRepository = {
       findById: vi.fn(),
       findActiveDraft: vi.fn().mockResolvedValue(null),
       findAll: vi.fn(),
       findAllActive: vi.fn(),
       findMany: vi.fn(),
-      save: vi.fn(), saveWithClasses: vi.fn(),
+      save: vi.fn().mockImplementation((p) => Promise.resolve(p)), saveWithClasses: vi.fn(),
       archive: vi.fn(), };
     
     const fakeProposal: SchedulingProposal = {
@@ -143,7 +143,8 @@ describe('GenerateProposalUseCase', () => {
 
     const result = await useCase.execute(dto);
 
-    expect(mockProposalRepo.save).not.toHaveBeenCalled();
+    expect(mockProposalRepo.save).toHaveBeenCalledOnce();
+    expect(mockProposalRepo.save).toHaveBeenCalledWith(fakeProposal);
     expect(result).toBe(fakeProposal);
   });
 });
