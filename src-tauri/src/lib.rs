@@ -1,4 +1,5 @@
 use std::sync::Mutex;
+use std::path::Path;
 use rusqlite::{Connection, params_from_iter, types::ValueRef};
 use serde_json::Value as JsonValue;
 use tauri::State;
@@ -11,8 +12,18 @@ struct DrizzleDbState {
 fn init_drizzle_db(db_path: String, state: State<DrizzleDbState>) -> Result<(), String> {
     let mut conn_guard = state.conn.lock().map_err(|e| e.to_string())?;
     if conn_guard.is_none() {
+        if let Some(parent) = Path::new(&db_path).parent() {
+            std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+        }
         let conn = Connection::open(&db_path).map_err(|e| e.to_string())?;
         conn.execute_batch("PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;").map_err(|e| e.to_string())?;
+        
+        // Run migrations
+        conn.execute_batch(include_str!("../../src/core/database/migrations/0000_wild_prowler.sql"))
+            .map_err(|e| format!("Migration 0000 failed: {}", e))?;
+        conn.execute_batch(include_str!("../../src/core/database/migrations/0001_panoramic_bloodstorm.sql"))
+            .map_err(|e| format!("Migration 0001 failed: {}", e))?;
+            
         *conn_guard = Some(conn);
     }
     Ok(())
@@ -84,27 +95,7 @@ fn execute_drizzle_sql(
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-  let migrations = vec![
-    tauri_plugin_sql::Migration {
-      version: 1,
-      description: "initial_schema",
-      sql: include_str!("../../src/core/database/migrations/0000_wild_prowler.sql"),
-      kind: tauri_plugin_sql::MigrationKind::Up,
-    },
-    tauri_plugin_sql::Migration {
-      version: 3,
-      description: "add_proposal_unscheduled_students",
-      sql: include_str!("../../src/core/database/migrations/0001_panoramic_bloodstorm.sql"),
-      kind: tauri_plugin_sql::MigrationKind::Up,
-    }
-  ];
-
   tauri::Builder::default()
-    .plugin(
-      tauri_plugin_sql::Builder::default()
-        .add_migrations("sqlite:edutech.db", migrations)
-        .build()
-    )
     .manage(DrizzleDbState {
       conn: Mutex::new(None),
     })

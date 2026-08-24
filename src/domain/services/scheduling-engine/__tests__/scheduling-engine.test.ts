@@ -31,7 +31,7 @@ describe('SchedulingEngine', () => {
 
     vi.spyOn(candidateGen, 'generate').mockReturnValue({ candidates: fakeCandidates, rejectionReasons: new Map() });
     vi.spyOn(ruleEngine, 'evaluate').mockReturnValue(fakeEvaluation);
-    vi.spyOn(optimizer, 'optimize').mockReturnValue({ accepted: fakeCandidates, rejectionReasons: new Map() });
+    vi.spyOn(optimizer, 'optimize').mockReturnValue({ accepted: [{ candidate: fakeCandidate, totalScore: 100, reasons: [] }], rejectionReasons: new Map() });
     vi.spyOn(proposalAssembler, 'assemble').mockReturnValue({
       id: 'prop-1',
       generatedAt: 'now',
