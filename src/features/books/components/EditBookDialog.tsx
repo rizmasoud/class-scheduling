@@ -12,7 +12,7 @@ const schema = z.object({
   name: z.string().min(1, 'Name is required'),
   level: z.number().min(1, 'Level must be at least 1'),
   sequenceOrder: z.number().min(1, 'Sequence order must be at least 1'),
-  sessionCount: z.number().min(1, 'Session count must be at least 1'),
+  sessionCount: z.number().min(1, 'Session count must be at least 1').max(7, 'Session count cannot exceed 7 (days per week)'),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -33,7 +33,7 @@ export function EditBookDialog({ opened, onClose, book }: Props) {
       name: '',
       level: 1,
       sequenceOrder: 1,
-      sessionCount: 10,
+      sessionCount: 1,
     },
   });
 
