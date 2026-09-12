@@ -18,6 +18,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@class-scheduling/contracts': path.resolve(__dirname, './packages/contracts/src/index.ts'),
+      '@class-scheduling/domain': path.resolve(__dirname, './packages/domain/src/index.ts'),
     }
   }
 });

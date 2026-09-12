@@ -5,7 +5,7 @@ export const defaultSchedulingConfig: SchedulingEngineConfig = {
   preferredCapacity: 8,
   maximumCapacity: 12,
   ruleWeights: {
-    teacherPreferenceWeight: 1,
+    teacherPreferenceWeight: 1, optimalCapacityWeight: 2, balancedDistributionWeight: 1,
     capacityWeight: 1,
     bookCompatibilityWeight: 1,
   },

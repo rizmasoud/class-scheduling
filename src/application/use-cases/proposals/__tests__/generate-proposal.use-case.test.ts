@@ -74,7 +74,7 @@ describe('GenerateProposalUseCase', () => {
       minimumCapacity: 5,
       preferredCapacity: 10,
       maximumCapacity: 15,
-      ruleWeights: { teacherPreferenceWeight: 1, capacityWeight: 1, bookCompatibilityWeight: 1 },
+      ruleWeights: { teacherPreferenceWeight: 1, optimalCapacityWeight: 2, balancedDistributionWeight: 1, capacityWeight: 1, bookCompatibilityWeight: 1 },
       timeSlotConfig: { allowedDaysOfWeek: [], instituteHours: { openingTime: '08:00', closingTime: '12:00' }, classDurationMinutes: 60 }
     };
 
@@ -136,7 +136,7 @@ describe('GenerateProposalUseCase', () => {
       minimumCapacity: 5,
       preferredCapacity: 10,
       maximumCapacity: 15,
-      ruleWeights: { teacherPreferenceWeight: 1, capacityWeight: 1, bookCompatibilityWeight: 1 },
+      ruleWeights: { teacherPreferenceWeight: 1, optimalCapacityWeight: 2, balancedDistributionWeight: 1, capacityWeight: 1, bookCompatibilityWeight: 1 },
       timeSlotConfig: { allowedDaysOfWeek: [], instituteHours: { openingTime: '08:00', closingTime: '12:00' }, classDurationMinutes: 60 }
     };
     const dto: GenerateProposalDTO = { date: '2023-01-01', config };

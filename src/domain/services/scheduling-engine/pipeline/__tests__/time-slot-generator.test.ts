@@ -10,7 +10,7 @@ describe('TimeSlotGenerator', () => {
     preferredCapacity: 10,
     maximumCapacity: 15,
     ruleWeights: {
-      teacherPreferenceWeight: 1,
+      teacherPreferenceWeight: 1, optimalCapacityWeight: 2, balancedDistributionWeight: 1,
       capacityWeight: 1,
       bookCompatibilityWeight: 1,
     },

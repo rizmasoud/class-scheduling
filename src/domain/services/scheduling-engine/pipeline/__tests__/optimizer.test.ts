@@ -10,7 +10,7 @@ describe('Optimizer', () => {
     preferredCapacity: 2,
     maximumCapacity: 10,
     timeSlotConfig: { allowedDaysOfWeek: ['Monday', 'Tuesday'], instituteHours: { openingTime: '08:00', closingTime: '18:00' }, classDurationMinutes: 120 },
-    ruleWeights: { capacityWeight: 1, teacherPreferenceWeight: 1, bookCompatibilityWeight: 1 }
+    ruleWeights: { capacityWeight: 1, teacherPreferenceWeight: 1, optimalCapacityWeight: 2, balancedDistributionWeight: 1, bookCompatibilityWeight: 1 }
   };
 
   const slotMondayMorning: TimeSlot = { id: 's1', weekDay: 'Monday', startTime: '08:00', endTime: '10:00' };
@@ -236,7 +236,7 @@ describe('Phase 2 Student Conflict Rules', () => {
     preferredCapacity: 2,
     maximumCapacity: 10,
     timeSlotConfig: { allowedDaysOfWeek: ['Monday', 'Tuesday'], instituteHours: { openingTime: '08:00', closingTime: '18:00' }, classDurationMinutes: 120 },
-    ruleWeights: { capacityWeight: 1, teacherPreferenceWeight: 1, bookCompatibilityWeight: 1 }
+    ruleWeights: { capacityWeight: 1, teacherPreferenceWeight: 1, optimalCapacityWeight: 2, balancedDistributionWeight: 1, bookCompatibilityWeight: 1 }
   };
 
   const slotMon = { id: 's1', weekDay: 'Monday', startTime: '09:00', endTime: '10:30' };

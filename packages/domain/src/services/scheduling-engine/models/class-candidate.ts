@@ -1,0 +1,9 @@
+import { TeacherId, BookId, StudentId } from '../../../models';
+import { TimeSlot } from './time-slot';
+
+export interface ClassCandidate {
+  readonly teacherId: TeacherId;
+  readonly bookId: BookId;
+  readonly studentIds: readonly StudentId[];
+  readonly timeSlots: readonly TimeSlot[];
+}

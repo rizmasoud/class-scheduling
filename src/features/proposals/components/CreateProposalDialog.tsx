@@ -65,7 +65,7 @@ export function CreateProposalDialog({ opened, onClose }: Props) {
         ruleWeights: {
           teacherPreferenceWeight: values.teacherPreferenceWeight,
           capacityWeight: values.capacityWeight,
-          bookCompatibilityWeight: values.bookCompatibilityWeight,
+          bookCompatibilityWeight: values.bookCompatibilityWeight, optimalCapacityWeight: 2, balancedDistributionWeight: 1,
         },
         timeSlotConfig: {
           allowedDaysOfWeek: values.allowedDaysOfWeek,

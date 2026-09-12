@@ -95,7 +95,7 @@ describe('Proposal Lifecycle (Integration)', () => {
     minimumCapacity: 2,
     preferredCapacity: 4,
     maximumCapacity: 6,
-    ruleWeights: { teacherPreferenceWeight: 1, capacityWeight: 1, bookCompatibilityWeight: 1 },
+    ruleWeights: { teacherPreferenceWeight: 1, optimalCapacityWeight: 2, balancedDistributionWeight: 1, capacityWeight: 1, bookCompatibilityWeight: 1 },
     timeSlotConfig: {
       allowedDaysOfWeek: ['Monday', 'Tuesday', 'Wednesday'],
       instituteHours: { openingTime: '08:00', closingTime: '20:00' },

@@ -1,6 +1,6 @@
 {
   "name": "EduTech",
-  "description": "Offline-first educational management application",
+  "description": "Educational class scheduling, teacher attendance, and concurrency-safe substitution workflows",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
