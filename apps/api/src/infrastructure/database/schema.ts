@@ -258,3 +258,36 @@ export const proposalUnscheduledStudents = pgTable('proposal_unscheduled_student
     .notNull(),
   reasons: jsonb('reasons').notNull(),
 });
+
+export const lessonPlans = pgTable('lesson_plans', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  classId: uuid('class_id')
+    .references(() => classes.id, { onDelete: 'cascade' })
+    .notNull()
+    .unique(),
+  teacherId: uuid('teacher_id')
+    .references(() => teachers.id, { onDelete: 'cascade' })
+    .notNull(),
+  title: varchar('title', { length: 255 }),
+  notes: text('notes'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const sessionLessonPlanEntries = pgTable('session_lesson_plan_entries', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  lessonPlanId: uuid('lesson_plan_id')
+    .references(() => lessonPlans.id, { onDelete: 'cascade' })
+    .notNull(),
+  sessionId: uuid('session_id')
+    .references(() => classSessions.id, { onDelete: 'cascade' })
+    .notNull()
+    .unique(),
+  syllabusItemId: uuid('syllabus_item_id')
+    .references(() => bookSyllabusItems.id, { onDelete: 'set null' }),
+  plannedTopics: text('planned_topics'),
+  homeworkAssigned: text('homework_assigned'),
+  actualTaughtNotes: text('actual_taught_notes'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});

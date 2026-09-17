@@ -183,3 +183,29 @@ export interface ProposalClassSchedule {
   readonly startTime: string;
   readonly endTime: string;
 }
+
+export type LessonPlanId = string;
+export type SessionLessonPlanEntryId = string;
+
+export interface LessonPlan {
+  readonly id: LessonPlanId;
+  readonly classId: ClassId;
+  readonly teacherId: TeacherId;
+  readonly title: string | null;
+  readonly notes: string | null;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+  readonly entries?: SessionLessonPlanEntry[];
+}
+
+export interface SessionLessonPlanEntry {
+  readonly id: SessionLessonPlanEntryId;
+  readonly lessonPlanId: LessonPlanId;
+  readonly sessionId: ClassSessionId;
+  readonly syllabusItemId: BookSyllabusItemId | null;
+  readonly plannedTopics: string | null;
+  readonly homeworkAssigned: string | null;
+  readonly actualTaughtNotes: string | null;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+}

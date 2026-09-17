@@ -1,3 +1,4 @@
+import { LessonPlansModule } from './lesson-plans/lesson-plans.module';
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from './infrastructure/database/database.module';
 import { AuthModule } from './auth/auth.module';
@@ -18,6 +19,7 @@ import { SchedulingModule } from './scheduling/scheduling.module';
     StudentsModule,
     TeachersModule,
     SchedulingModule,
+    LessonPlansModule,
   ],
 })
 export class AppModule {}

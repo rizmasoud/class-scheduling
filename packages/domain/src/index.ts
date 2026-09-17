@@ -31,3 +31,5 @@ export * from './services/scheduling-engine/rules/soft-rules/balanced-distributi
 export * from './services/scheduling-engine/rules/soft-rules/teacher-preference.rule';
 export * from './services/scheduling-engine/rules/soft-rules/optimal-capacity.rule';
 export * from './services/scheduling-engine/rules/soft-rules/teacher-experience.rule';
+
+export * from './services/lesson-plan.logic';

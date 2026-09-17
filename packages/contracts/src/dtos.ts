@@ -174,3 +174,63 @@ export interface ClassDTO {
   studentIds?: string[];
 }
 
+
+export interface SessionLessonPlanEntryDTO {
+  id: string;
+  lessonPlanId: string;
+  sessionId: string;
+  syllabusItemId: string | null;
+  plannedTopics: string | null;
+  homeworkAssigned: string | null;
+  actualTaughtNotes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LessonPlanDetailDTO {
+  id: string;
+  classId: string;
+  teacherId: string;
+  title: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  entries: (SessionLessonPlanEntryDTO & {
+    sessionDate?: string;
+    sessionStartTime?: string;
+    sessionEndTime?: string;
+    sessionStatus?: string;
+    syllabusTopic?: string;
+  })[];
+}
+
+export interface UpsertLessonPlanEntryDTO {
+  sessionId: string;
+  syllabusItemId?: string | null;
+  plannedTopics?: string | null;
+  homeworkAssigned?: string | null;
+  actualTaughtNotes?: string | null;
+}
+
+export interface SaveLessonPlanDTO {
+  title?: string;
+  notes?: string;
+  entries: UpsertLessonPlanEntryDTO[];
+}
+
+export interface SyllabusProgressItemDTO {
+  syllabusItemId: string;
+  topic: string;
+  coveredCount: number;
+  isCovered: boolean;
+}
+
+export interface ClassSyllabusProgressDTO {
+  classId: string;
+  bookId: string;
+  bookTitle: string;
+  totalSyllabusItems: number;
+  coveredItemsCount: number;
+  coveragePercentage: number;
+  items: SyllabusProgressItemDTO[];
+}
